@@ -9,7 +9,6 @@ seeds = []
 src_name = ''
 dst_name = ''
 
-map_moves = {}
 ranges = defaultdict(list)
 
 for line in lines:
@@ -18,62 +17,71 @@ for line in lines:
     elif line.endswith('map:'):
         n,m = line.split()
         src_name,t,dst_name = n.split('-')
-        map_moves[src_name] = dst_name
     elif len(line) > 0:
-        dst, src, rng = re.findall('\d+', line)
-        ranges[src_name].append((int(src), int(dst), int(rng)))
+        dst, src, rng = [int(x) for x in re.findall('\d+', line)]
+        ## # Check for overlapping destinations
+        ## for d,s,r in ranges[src_name]:
+        ##     dmax = d+r-1
+        ##     if (d <= dst <= dmax) or (d <= dst+rng-1 <= dmax) or (dst < d and dmax < dst+rng-1):
+        ##         print('Overlapping dst ranges: {} -> {} and {} -> {}'.format(d,dmax,dst,dst+rng-1 ))
+        ranges[src_name].append([dst,src,rng])
 
-def recurse(thing):
-    # Location is the final value
-    if thing[1] == 'location':
-        return thing[0]
-    # Iterate through all the ranges given by thing[1]
-    for src, dst, rng in ranges[thing[1]]:
-        # Is the provided number in range?
-        if src <= thing[0] < src+rng:
-            newthing = (thing[0]-src+dst, map_moves[thing[1]])
-            return recurse(newthing)
-    # Seed doesn't exist - use the provided value
-    newthing = (thing[0], map_moves[thing[1]])
-    return recurse(newthing)
+# Part 1
 
-lowest = 999999999999999999
+def get_dst_from_map(map_name, value):
+    for entry in ranges[map_name]:
+        dst, src, rng = entry
+        if src <= value < src+rng:
+            return dst + (value - src)
+    return value
 
-for seed in seeds:
-    loc = recurse((seed, 'seed'))
-    lowest = min(loc, lowest)
+def part1():
+    lowest = 99999999999999999999
+    # Iterate through the seeds
+    for seed in seeds:
+        # Get the values from the maps
+        soil        = get_dst_from_map('seed',        seed)
+        fertilizer  = get_dst_from_map('soil',        soil)
+        water       = get_dst_from_map('fertilizer',  fertilizer)
+        light       = get_dst_from_map('water',       water)
+        temperature = get_dst_from_map('light',       light)
+        humidity    = get_dst_from_map('temperature', temperature)
+        location    = get_dst_from_map('humidity',    humidity)
+        # Find the lowest location value
+        lowest = min(location, lowest)
 
-print('Part 1:', lowest)
+    return lowest
+
+print('Part 1:', part1())
 
 # Part 2
 
-new_seeds = []
+# Reverse the lookup, starting from location 0 and incrementing the location number until it
+# matches a valid seed number in the original list.
 
-lowest = 999999999999999999
-
-def get_val_from_map(map_name, value):
+def get_src_from_map(map_name, value):
     for entry in ranges[map_name]:
-        src, dst, rng = entry
+        dst, src, rng = entry
         if dst <= value < dst+rng:
             return src + (value - dst)
     return value
 
 def part2():
     # Just try all locations starting from 0 as we're looking for the lowest location
-    for val in itertools.count():
+    for location in itertools.count():
         # Get the values from the maps in reverse
-        humidity    = get_val_from_map('humidity',    val)
-        temperature = get_val_from_map('temperature', humidity)
-        light       = get_val_from_map('light',       temperature)
-        water       = get_val_from_map('water',       light)
-        fertilizer  = get_val_from_map('fertilizer',  water)
-        soil        = get_val_from_map('soil',        fertilizer)
-        seed        = get_val_from_map('seed',        soil)
+        humidity    = get_src_from_map('humidity',    location)
+        temperature = get_src_from_map('temperature', humidity)
+        light       = get_src_from_map('light',       temperature)
+        water       = get_src_from_map('water',       light)
+        fertilizer  = get_src_from_map('fertilizer',  water)
+        soil        = get_src_from_map('soil',        fertilizer)
+        seed        = get_src_from_map('seed',        soil)
         # Is the seed location within any seed ranges?
         for src, rng in zip(seeds[::2], seeds[1::2]):
+            # Is the seed number in one of the seed ranges?
             if src <= seed < src+rng:
-                print('Part 2:', val)
+                print('Part 2:', location)
                 exit(0)
 
 part2()
-
