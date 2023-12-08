@@ -15,7 +15,7 @@ class Node:
 for line in lines:
     if '=' in line:
         n, l, r = re.findall('[A-Z0-9]+', line)
-        nodes[n] = Node(l,r)
+        nodes[n] = {'L':l, 'R':r}
     elif line != '':
         directions = str(line)
 
@@ -31,11 +31,7 @@ steps = 0
 def move(node):
     global steps, inst, nodes, directions
     steps += 1
-    if directions[inst] == 'L':
-        newnode = nodes[node].l
-    else:
-        newnode = nodes[node].r
-
+    newnode = nodes[node][directions[inst]]
     # Move on inst
     inst = (inst + 1) % len(directions)
     return newnode
