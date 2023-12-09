@@ -7,11 +7,6 @@ lines = open('08.in').read().splitlines()
 
 nodes = defaultdict()
 
-class Node:
-    def __init__(self, l, r):
-        self.l = l
-        self.r = r
-
 for line in lines:
     if '=' in line:
         n, l, r = re.findall('[A-Z0-9]+', line)
