@@ -135,7 +135,7 @@ while not done:
             if   moving == 's': moving = 'e'
             elif moving == 'w': moving = 'n'
 
-    # Get the movementfor the next location
+    # Get the movement for the next location
     dr,dc = dirs[moving]
 
     # New location along the pipe
@@ -150,7 +150,7 @@ while not done:
 
 inside_count = 0
 
-# Keep trackl of the number of pipe traversals and junction rossings for each row.
+# Keep track of the number of pipe traversals and junction crossings for each row.
 for r in range(max_r):
     # Keep track of if we're inside on this row
     inside = 0
