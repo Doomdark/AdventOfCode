@@ -1,92 +1,37 @@
 from collections import defaultdict, deque
-import heapq as heap
 
 lines = open('10.in').read().splitlines()
 
-def dijkstra(G, startingNode):
-    visited = set()
-    parentsMap = {}
-    pq = []
-    nodeCosts = defaultdict(lambda: float('inf'))
-    nodeCosts[startingNode] = 0
-    heap.heappush(pq, (0, startingNode))
-    
-    while pq:
-        # go greedily by always extending the shorter cost nodes first
-        _, node = heap.heappop(pq)
-        visited.add(node)
-
-        for adjNode, weight in G[node].items():
-            if adjNode in visited:  continue
-
-            newCost = nodeCosts[node] + weight
-            if nodeCosts[adjNode] > newCost:
-                parentsMap[adjNode] = node
-                nodeCosts[adjNode] = newCost
-                heap.heappush(pq, (newCost, adjNode))
-
-    return parentsMap, nodeCosts
-
-Graph = defaultdict(dict)
 Grid  = defaultdict()
 
 max_r = 0
 max_c = 0
 
+dirs = {'n':(-1,0), 'e':(0,1), 's':(1,0), 'w':(0,-1)}
+
 for r,line in enumerate(lines):
     for c,char in enumerate(line):
-        Grid[(r,c)] = char
-        if char == '.':
-            continue
-        # Figure out how the S square connects after we've done the rest of the graph
         if char == 'S':
             start = (r,c)
-            continue
-        # Work out the connectivity
-        if   char == '-': adjacents = [(0,-1),(0,1)]
-        elif char == 'F': adjacents = [(1,0),(0,1)]
-        elif char == '|': adjacents = [(1,0),(-1,0)]
-        elif char == 'L': adjacents = [(0,1),(-1,0)]
-        elif char == 'J': adjacents = [(0,-1),(-1,0)]
-        elif char == '7': adjacents = [(0,-1),(1,0)]
-        for dr,dc in adjacents:
-            nr,nc=r+dr,c+dc
-            Graph[(r,c)][(nr,nc)] = 1
+        Grid[(r,c)] = char
         max_c = max(c,max_c)
     max_r = max(r,max_r)
 
 # Now determine what type of square S is
 n,e,s,w=0,0,0,0
 
+def resolve_s(d, loc, check):
+    vals = dirs[d]
+    nr,nc = loc[0]+vals[0], loc[1]+vals[1]
+    if 0<=nr<=max_r and 0<=nc<=max_c:
+        if Grid[(nr,nc)] in check:
+            return 1
+
 # Shove in all the try statements to make it ignore off-grid errors
-nr,nc=start[0]+0,start[1]+1
-try:
-    if Grid[(nr,nc)] in ['-', 'J', '7']:
-        Graph[start][(nr,nc)] = 1
-        e=1
-except:
-    pass
-nr,nc=start[0]+0,start[1]-1
-try:
-    if Grid[(nr,nc)] in ['-', 'L', 'F']:
-        Graph[start][(nr,nc)] = 1
-        w=1
-except:
-    pass
-nr,nc=start[0]+1,start[1]+0
-try:
-    if Grid[(nr,nc)] in ['|', 'J', 'L']:
-        Graph[start][(nr,nc)] = 1
-        s=1
-except:
-    pass
-nr,nc=start[0]-1,start[1]+0
-try:
-    if Grid[(nr,nc)] in ['|', 'F', '7']:
-        Graph[start][(nr,nc)] = 1
-        n=1
-except:
-    pass
+e = resolve_s('e', start, '-J7')
+w = resolve_s('w', start, '-LF')
+s = resolve_s('s', start, '|JL')
+n = resolve_s('n', start, '|F7')
 
 # What type of square is S?
 if   n and e: Grid[start] = 'L'
@@ -96,16 +41,7 @@ elif s and w: Grid[start] = '7'
 elif n and s: Grid[start] = '|'
 elif e and w: Grid[start] = '-'
 
-# Solve part 1
-parentsMap, nodeCosts = dijkstra(Graph, start)
-print('Part 1:', max([x for x in nodeCosts.values()]))
-
-# Part 2
-
-# Traverse round the loop and mark which locations the main loop resides.
-
-dirs = {'n':(-1,0), 'e':(0,1), 's':(1,0), 'w':(0,-1)}
-
+# OK, the grid is done. Traverse the pipe to figure out how long it is and then divide by 2 for part 1.
 loop = set()
 loop.add(start)
 
@@ -147,6 +83,10 @@ while not done:
 
     # Add this location to the loop
     loop.add(loc)
+
+print('Part 1:', len(loop)//2)
+
+# Part 2
 
 inside_count = 0
 
