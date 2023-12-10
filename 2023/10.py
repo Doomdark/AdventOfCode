@@ -98,12 +98,10 @@ for r in range(max_r):
     lasts = deque()
     # Traverse the row
     for c in range(max_c):
-        # Current location
-        loc = (r,c)
         # Character in this grid location
         v = Grid[(r,c)]
         # Is the location on the main loop?
-        if not loc in loop:
+        if not (r,c) in loop:
             if inside > 0:
                 inside_count += 1
             continue
