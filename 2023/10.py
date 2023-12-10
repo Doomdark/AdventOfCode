@@ -7,6 +7,7 @@ Grid  = defaultdict()
 max_r = 0
 max_c = 0
 
+# Grid directions
 dirs = {'n':(-1,0), 'e':(0,1), 's':(1,0), 'w':(0,-1)}
 
 for r,line in enumerate(lines):
@@ -27,7 +28,7 @@ def resolve_s(d, loc, check):
         if Grid[(nr,nc)] in check:
             return 1
 
-# Shove in all the try statements to make it ignore off-grid errors
+# Does S have a square n,e,s,w of it which should connect to it?
 e = resolve_s('e', start, '-J7')
 w = resolve_s('w', start, '-LF')
 s = resolve_s('s', start, '|JL')
@@ -54,9 +55,9 @@ while not done:
     r,c = loc
     # Not started moving yet
     if loc == start:
-        if   Grid[loc] in ['-', 'F', 'L'] : moving = 'e'
-        elif Grid[loc] in ['|', '7']      : moving = 's'
-        elif Grid[loc] in ['J']           : moving = 'n'
+        if   Grid[loc] in '-FL' : moving = 'e'
+        elif Grid[loc] in '|7'  : moving = 's'
+        elif Grid[loc] in 'J'   : moving = 'n'
     else: # Already moving
         if Grid[loc] == 'F':
             if   moving == 'n': moving = 'e'
@@ -81,7 +82,7 @@ while not done:
     if loc == start:
         done = True
 
-    # Add this location to the loop
+    # Add this location to the set
     loop.add(loc)
 
 print('Part 1:', len(loop)//2)
