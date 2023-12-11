@@ -1,4 +1,4 @@
-from collections import defaultdict, deque
+from collections import defaultdict
 
 lines = open('10.in').read().splitlines()
 
@@ -91,45 +91,37 @@ print('Part 1:', len(loop)//2)
 
 inside_count = 0
 
+# How to switch from inside to outside and back
+insides = {0:1, 1:0}
+
 # Keep track of the number of pipe traversals and junction crossings for each row.
 for r in range(max_r):
     # Keep track of if we're inside on this row
     inside = 0
     # Stack of matches for pipe corners
-    lasts = deque()
+    lasts = []
     # Traverse the row
     for c in range(max_c):
         # Character in this grid location
         v = Grid[(r,c)]
         # Is the location on the main loop?
         if not (r,c) in loop:
-            if inside > 0:
-                inside_count += 1
+            inside_count += inside
             continue
         
-        # If we're not inside the loop then see if we are about to be
-        if inside:
-            if v == '|':
-                inside -= 1
-            elif v in 'FL':
-                lasts.append(v)
-            elif v in 'J' and lasts[-1] in 'F':
-                inside -= 1
-                lasts.pop()
-            elif v in '7' and lasts[-1] in 'L':
-                inside -= 1
-                lasts.pop()
-        else:
-            if v == '|':
-                inside += 1
-            elif v in 'FL':
-                lasts.append(v)
-            elif v in 'J' and lasts[-1] in 'F':
-                inside += 1
-                lasts.pop()
-            elif v in '7' and lasts[-1] in 'L':
-                inside += 1
-                lasts.pop()
+        # If we're not inside the loop then see if we are about to be.
+        # If a pipe corner is L-*7 pr F-*J then that's equivalent to |.
+        if v == '|':
+            inside = insides[inside]
+        # Starting pipe corner
+        elif v in 'FL':
+            lasts.append(v)
+        # End pipe corner going north
+        elif v in 'J' and lasts[-1] in 'F':
+            inside = insides[inside]
+        # End pipe corner going south
+        elif v in '7' and lasts[-1] in 'L':
+            inside = insides[inside]
                     
 print('Part 2:', inside_count)
 
