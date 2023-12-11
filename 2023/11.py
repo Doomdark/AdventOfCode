@@ -13,17 +13,14 @@ for r,line in enumerate(lines):
         max_c = max(c,max_c)
     max_r = max(r,max_r)
 
-size_r = max_r+1
-size_c = max_c+1
-
 # Find which rows and columns are empty
 all_c = [c for r,c in galaxies]
-for c in range(size_c):
+for c in range(max_c+1):
     if c not in all_c:
         empty_columns.add(c)
 
 all_r = [r for r,c in galaxies]
-for r in range(size_r):
+for r in range(max_r+1):
     if r not in all_r:
         empty_rows.add(r)
 
@@ -51,7 +48,7 @@ def solve(part2=False):
     width = 1000000 if part2 else 2
     for a in galaxies:
         for b in galaxies:
-            # Don't test the same galaxy with itself
+            # Don't test a galaxy against itself
             if a == b: continue
             # Make a unique galaxy pair ID string
             id = ''.join(sorted([str(a), str(b)]))
