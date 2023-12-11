@@ -99,7 +99,7 @@ for r in range(max_r):
     # Keep track of if we're inside on this row
     inside = 0
     # Stack of matches for pipe corners
-    lasts = []
+    last = ''
     # Traverse the row
     for c in range(max_c):
         # Character in this grid location
@@ -109,19 +109,14 @@ for r in range(max_r):
             inside_count += inside
             continue
         
-        # If we're not inside the loop then see if we are about to be.
-        # If a pipe corner is L-*7 pr F-*J then that's equivalent to |.
-        if v == '|':
+        # If a pipe traverse is L-*7 pr F-*J then that's equivalent to |.
+        if v == '|' or last+v in ['FJ', 'L7']:
+            # We've changed state
             inside = insides[inside]
         # Starting pipe corner
         elif v in 'FL':
-            lasts.append(v)
-        # End pipe corner going north
-        elif v in 'J' and lasts[-1] in 'F':
-            inside = insides[inside]
-        # End pipe corner going south
-        elif v in '7' and lasts[-1] in 'L':
-            inside = insides[inside]
+            # Store the pipe corner
+            last = v
                     
 print('Part 2:', inside_count)
 
