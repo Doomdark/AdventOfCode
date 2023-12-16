@@ -155,24 +155,16 @@ def part2():
 
     # All east points
     for r in range(size_r):
-        loc = (r,0)
-        energy = solve(loc,'e')
-        max_energy = max(max_energy, energy)
+        max_energy = max(max_energy, solve((r,0), 'e'))
     # All west points
     for r in range(size_r):
-        loc = (r,max_c)
-        energy = solve(loc,'w')
-        max_energy = max(max_energy, energy)
+        max_energy = max(max_energy, solve((r,max_c), 'w'))
     # All south points
     for c in range(size_c):
-        loc = (0,c)
-        energy = solve(loc,'s')
-        max_energy = max(max_energy, energy)
+        max_energy = max(max_energy, solve((0,c), 's'))
     # All north points
     for c in range(size_c):
-        loc = (max_r,c)
-        energy = solve(loc,'n')
-        max_energy = max(max_energy, energy)
+        max_energy = max(max_energy, solve((max_r,c), 'n'))
 
     return max_energy
 
