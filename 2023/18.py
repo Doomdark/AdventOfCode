@@ -47,7 +47,7 @@ def process_line(loc, dir, val, colour):
     # Return new location
     return nloc
 
-def part1():
+def solve():
     global loc, corners, boundary
     
     # Read input
@@ -62,7 +62,7 @@ def part1():
     
     return area
 
-print('Part 1:', part1())
+print('Part 1:', solve())
 
 # Part 2
 
@@ -73,6 +73,7 @@ loc = (0,0)
 corners  = [loc]
 boundary = 0
 
+# Update the process_line function for part 2
 def process_line(loc, dir, val, colour):
     global corners, boundary
     r,c = loc
@@ -91,19 +92,4 @@ def process_line(loc, dir, val, colour):
     # Return new location
     return nloc
 
-def part2():
-    global loc, corners, boundary
-    
-    # Read input
-    for line in lines:
-        dir, val, col = line.split(' ')
-        loc = process_line(loc, dir, val, col)
-
-    # Shoelace theorem
-    area = shoelace(0, corners)
-    # Pick's theorem
-    area = pick(area, boundary)
-    
-    return area
-
-print('Part 2:', part2())
+print('Part 2:', solve())
