@@ -68,7 +68,7 @@ def solve(part2=False):
     final_path = []
     
     # Starting position/directions. For part 2 we could start off going south, not east.
-    for dir in ['e','s']:
+    for dir in ['s','e']:
         # Store the lowest total for this location
         visited[(loc, dir, 0)] = total
         # States to track movements
