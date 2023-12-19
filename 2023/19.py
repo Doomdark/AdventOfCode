@@ -104,4 +104,3 @@ for p in parts:
 print('Part 1:', sum([x for x in accepted.values()]))
 print('Part 2:', IN(None, defaultrange, True))
 
-    
