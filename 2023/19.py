@@ -17,8 +17,7 @@ def {name}(part, ranges=defaultrange, part2=False):
       total = 0
       # Iterate through the workflow rules
       for i, (a, gtlt, threshold, dest1, dest2) in enumerate({workflow}):
-          passrange = None
-          failrange = None
+          passrange, failrange = None, None
           # Copy the ranges for this iteration
           nranges = dict(ranges)
           # Set the destination workflow
@@ -26,7 +25,7 @@ def {name}(part, ranges=defaultrange, part2=False):
           # Check if there's a new condition
           if a:
               # Current begin and end values for the specified range
-              beg, end = ranges[a]
+              beg, end = nranges[a]
               # New threshold value
               val = int(threshold)
               # New range for this variable              
