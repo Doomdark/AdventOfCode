@@ -16,7 +16,7 @@ def {name}(part, ranges=defaultrange, part2=False):
    if part2:
       total = 0
       # Iterate through the workflow rules
-      for i, (a, gtlt, threshold, dest1, dest2) in enumerate({workflow}):
+      for a, gtlt, threshold, dest1, dest2 in {workflow}:
           passrange, failrange = None, None
           # Copy the ranges for this iteration
           nranges = dict(ranges)
