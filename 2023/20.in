@@ -1,0 +1,58 @@
+%bb -> kf, rb
+%bn -> sv, bt
+%cq -> gp, mq
+%ct -> rt, rb
+%df -> nv
+%dx -> bt, tz
+%ff -> gp, df
+%fk -> xh
+%gs -> gp
+%hq -> bb
+%hx -> rb
+%jm -> ml, kp
+%kf -> rb, ph
+%kh -> ml
+%kj -> fk
+%kp -> vk
+%kq -> tl, bt
+%lx -> ff, gp
+%mq -> pr
+%nk -> nn, bt
+%nn -> xf, bt
+%nt -> gs, gp
+%nv -> xm
+%pb -> kq
+%pf -> gp, nt
+%ph -> rb, hx
+%pr -> gp, pf
+%ps -> qz, ml
+%qr -> bt, zt
+%qz -> ml, kh
+%rt -> hq
+%sh -> zk
+%sj -> kj, rb
+%sr -> vs, ml
+%sv -> dx, bt
+%tk -> sh
+%tl -> bn
+%tp -> gp, lx
+%tq -> jm
+%tz -> bt
+%vk -> tk
+%vs -> tq, ml
+%xf -> qr
+%xh -> zs, rb
+%xm -> gp, cq
+%zk -> ml, ps
+%zs -> ct
+%zt -> pb, bt
+&bt -> tl, nk, pb, xf, vg
+&gp -> df, ls, mq, tp, nv
+&ml -> kp, sr, tq, nb, tk, sh, vk
+&rb -> vc, zs, fk, hq, rt, sj, kj
+&nb -> lg
+&ls -> lg
+&vc -> lg
+&vg -> lg
+&lg -> rx
+broadcaster -> sj, sr, tp, nk
