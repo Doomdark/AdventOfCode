@@ -127,7 +127,7 @@ for component in components.values():
             if dest not in debug_components:
                 debug = Debug(dest, [], update_queue)
                 debug_components[dest] = debug
-        # Ifthis is a conjunction then add it as a source to the appropriate conjunction
+        # If this destination is a conjunction then add it as a source to the appropriate conjunction
         if dest in all_conjunctions:
             components[dest].add_src(component.name)
 
