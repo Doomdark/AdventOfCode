@@ -198,7 +198,6 @@ digraph.close()
 # Each counter generates a pulse for a specific value.
 # The pulses are all ANDed together before reaching the final 4-input NAND gate.
 # Figure out the counters and at which count value a pulse is generated.
-# The answer is then the LCM of those 4 values.
 #
 # Chains are in reverse order of lsb -> msb.
 #
@@ -220,14 +219,12 @@ chain2 = 3851
 chain3 = 3943
 chain4 = 3881
 
-# Least common multiple for an array
-import math
+# Multiply all the primes together to get the answer
 from functools import reduce
 
-def lcm(arr):
-    l = reduce(lambda x,y:(x*y)//math.gcd(x,y),arr)
-    return l
+def product(arr):
+    return reduce(lambda x,y:(x*y), arr)
 
 array = [chain1, chain2, chain3, chain4]
 
-print('Part 2:', lcm(array))
+print('Part 2:', product(array))
