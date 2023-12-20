@@ -59,7 +59,6 @@ class Flop(Base):
     def update(self):
         src, pulse = self.queue.popleft()
         if pulse == 0:
-            # Toggle flop
             self.val = 0 if self.val else 1
             for dest in self.dests:
                 if verbose: print(self.name, self.val, '->', dest)
@@ -102,8 +101,6 @@ class Debug(Base):
 
     def update(self):
         src, pulse = self.queue.popleft()
-        if self.name == 'rx' and pulse == 0:
-            update_rx_low_pulses()
 
 # Parse the lines
 for line in lines:
