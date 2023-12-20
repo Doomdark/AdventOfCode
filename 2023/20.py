@@ -214,7 +214,7 @@ digraph.close()
 #          1   0   0   1   0   1   0   0   1   1   1   1 = 0xf29 = 3881
 #
 
-# Chain lengths
+# Counter values
 chain1 = 3931
 chain2 = 3851
 chain3 = 3943
