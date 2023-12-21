@@ -29,7 +29,7 @@ class Base:
 
     def __repr__(self):
         return '{} {} {}'.format(self.name, self.val, self.dests)
-        
+
 class Conjunction(Base):
     'NAND gate'
     def __init__(self, name, dests, update_queue):
@@ -50,7 +50,7 @@ class Conjunction(Base):
             self.update_queue.append(dest)
             if send_pulse == 0: update_low_pulses()
             else:               update_high_pulses()
-        
+
 class Flop(Base):
     'Toggle flip-flop'
     def __init__(self, name, dests, update_queue):
@@ -66,7 +66,7 @@ class Flop(Base):
                 self.update_queue.append(dest)
                 if self.val == 0: update_low_pulses()
                 else:             update_high_pulses()
-      
+
 class Broadcast(Base):
     'Broadcaster guy'
     def __init__(self, name, dests, update_queue):
@@ -141,7 +141,7 @@ def solve(pushes=1):
 
     for _ in range(pushes):
         button.push()
-        
+
         # Run until the updates stop
         while update_queue:
             # Do the items currently in the queue
@@ -177,10 +177,10 @@ for line in lines:
         digraph.write(line[1:]+'\n')
     elif name.startswith('%'):
         flops.append(_name)
-        digraph.write(line[1:]+'\n')        
+        digraph.write(line[1:]+'\n')
     else:
         other.append(name)
-        digraph.write(line+'\n')       
+        digraph.write(line+'\n')
 
 for item in flops     : digraph.write(f'{item} [style=filled, fillcolor=red]\n')
 for item in ands      : digraph.write(f'{item} [style=filled, fillcolor=orange]\n')
