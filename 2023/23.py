@@ -2,10 +2,16 @@ from collections import deque
 
 grid = open('23.in').read().splitlines()
 start = (0,1)
+end   = (len(grid)-1, len(grid[0])-2)
 
 def get_adjacents(loc, part2=False):
     r,c = loc
     # Possible neighbours
+    # If the location is immediately north of the exit then that can be the only route.
+    # Otherwise the exit will be blocked and the rest of the path is pointless.
+    if (r,c+1) == end:
+        yield (r, c+1)
+        return
     for dr,dc in [(0,1),(0,-1),(1,0),(-1,0)]:
         nr,nc = r+dr,c+dc
         # Check for on-grid
