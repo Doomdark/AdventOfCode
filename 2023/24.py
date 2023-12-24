@@ -62,26 +62,27 @@ part1(200000000000000, 400000000000000)
 
 # Part 2
 
-# z3 solution from the same place as the intersect above. Now I just need to figure out why it works.
+# z3 solution from the same place as the intersect above.
 
-# Number of stones to give to the solver. 3 is the minimum.
+# Number of stones to give to the solver. 3 is the minimum required to get the right answer. Triangulation, see.
 N = 3
 
 # Make z3 integers x,y,z,u,v,w
 x,y,z,u,v,w = map(z3.Int, "xyzuvw")
 
-# Make times t0-t2 for the first 3 stones
+# Make times t0-tN for the first N stones
 ts = [z3.Int("t{}".format(i)) for i in range(len(stones[:N]))]
 
 # Make a solver instance
 s = z3.Solver()
 
 # Add the first 3 stones and times to the solver
-for t, c in zip(ts, stones[:N]):
-    # Add each dimension's constraint equation for this stone
-    s.add(x+t*u == c.px+t*c.vx)
-    s.add(y+t*v == c.py+t*c.vy)
-    s.add(z+t*w == c.pz+t*c.vz)
+for t, s in zip(ts, stones[:N]):
+    # Add each dimension's constraint equation for this stone.
+    # (predicted) position + (time * (predicted) velocity) == (known) position + (time * (known) velocity)
+    s.add(x+t*u == s.px+t*s.vx)
+    s.add(y+t*v == s.py+t*s.vy)
+    s.add(z+t*w == s.pz+t*s.vz)
 
 # Solve the constraints
 s.check()
@@ -89,7 +90,7 @@ s.check()
 # Get the results
 m = s.model()
 
-# Sum the results for the x,y,z coordinates of the initial position of the rock
+# Sum the results of the x,y,z coordinates of the initial position of the rock
 answer = sum(m[c].as_long() for c in (x,y,z))
 
 print('Part 2:', answer)
