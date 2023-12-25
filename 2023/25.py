@@ -3,9 +3,6 @@ import networkx as nx
 
 lines = open('25.in').read().splitlines()
 
-wires = set()
-nodes = {}
-
 G = nx.Graph()
 
 # Make nodes
