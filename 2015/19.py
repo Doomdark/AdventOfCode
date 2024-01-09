@@ -9,10 +9,7 @@ string = None
 for line in lines:
     if '=>' in line:
         l = line.split(' => ')
-        if l[0] in subs:
-            subs[l[0]].append(l[1])
-        else:
-            subs[l[0]] = [l[1]]
+        subs[l[0]].append(l[1])
     elif line != '':
         string = line
 
@@ -61,15 +58,16 @@ def solve2(subs, string):
 
     return new_strings
 
+from heapq import heappush, heappop
+
 q = deque()
-q.append((string,0))
+q.append((string, 0))
 
 target = 'e'
 visited = set()
 
 while q:
     #print(len(q))
-    # Do the oldest states first
     lstring, steps = q.pop()
 
     # Do all possible replacements
