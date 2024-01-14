@@ -66,7 +66,7 @@ def solve(part2=False):
     minimum_loss = 999999
     # Final path for debug
     final_path = []
-    
+
     # Starting position/directions. For part 2 we could start off going south, not east.
     for dir in ['s','e']:
         # Store the lowest total for this location
@@ -74,7 +74,7 @@ def solve(part2=False):
         # States to track movements
         state = (loc, dir, step_count, total, [loc])
         heappush(states, state)
-    
+
     # Process all the states
     while states:
         # Current state
@@ -110,7 +110,7 @@ def solve(part2=False):
             heappush(states, new_state)
 
     #print_path(final_path)
-    
+
     return minimum_loss
 
 print('Part 1:', solve())
@@ -118,4 +118,3 @@ print('Part 1:', solve())
 # Part 2
 
 print('Part 2:', solve(True))
-
