@@ -64,21 +64,19 @@ def solve(part2=False):
     states = []
     # Mimimum heat loss
     minimum_loss = 999999
-    # Final path for debug
-    final_path = []
 
     # Starting position/directions. For part 2 we could start off going south, not east.
     for dir in ['s','e']:
         # Store the lowest total for this location
         visited[(loc, dir, 0)] = total
         # States to track movements
-        state = (loc, dir, step_count, total, [loc])
+        state = (loc, dir, step_count, total)
         heappush(states, state)
 
     # Process all the states
     while states:
         # Current state
-        loc, dir, step_count, total, path = heappop(states)
+        loc, dir, step_count, total = heappop(states)
         # Are we at the end square now?
         if loc == (max_r,max_c):
             # Step count must be >= 4 for part 2
@@ -86,7 +84,6 @@ def solve(part2=False):
                 continue
             if total < minimum_loss:
                 minimum_loss = total
-                final_path = path
             continue
         # Where can we go next?
         moves = get_moves(dir, loc, part2, step_count)
@@ -97,19 +94,14 @@ def solve(part2=False):
             new_step_count = 1 if new_dir != dir else step_count + 1
             # Add on the new block's heat loss
             new_total = total + grid[new_loc]
-            # Track the path for debug
-            new_path = path[:]
-            new_path.append(new_loc)
             # Been here before with a lower total?
             if new_total >= visited[(new_loc, new_dir, new_step_count)]:
                 continue
             visited[(new_loc, new_dir, new_step_count)] = new_total
             # Otherwise add the new state to the queue
-            new_state = (new_loc, new_dir, new_step_count, new_total, new_path)
+            new_state = (new_loc, new_dir, new_step_count, new_total)
             # Add the new state to the list
             heappush(states, new_state)
-
-    #print_path(final_path)
 
     return minimum_loss
 
