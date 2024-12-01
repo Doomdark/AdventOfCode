@@ -1,3 +1,4 @@
+import functools
 from collections import  defaultdict, deque
 import heapq as heap
 import copy
@@ -329,7 +330,8 @@ if do_part2:
     elf_attack_power = 15
 
     while True:
-        print('-'*5,'Elf attack power:',elf_attack_power,'-'*5)
+        if attack_verbose:
+            print('-'*5,'Elf attack power:',elf_attack_power,'-'*5)
         # Restore the start state
         elves = copy.deepcopy(elves_copy)
         goblins = copy.deepcopy(goblins_copy)
