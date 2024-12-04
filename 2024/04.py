@@ -53,50 +53,15 @@ print('Part 1:', total)
 
 # Part 2
 
-string = 'MAS'
-
-paths = []
-
-# Traverse the grid starting at each point and look for XMAS
+# Find all the A's
 total = 0
-for r in range(max_r+1):
-    for c in range(max_c+1):
-        if grid[r][c] == string[0]:
-            words = dfs((r,c), 0, None, [(r,c)])
-            total += words
-
-def test(one, two):
-    onestart, oneend = one[0], one[-1]
-    twostart, twoend = two[0], two[-1]
-
-    # Looking for crosses to start and end so r and c must be different
-    if onestart[0] != oneend[0] and onestart[1] != oneend[1]:
-        if twostart[0] != twoend[0] and twostart[1] != twoend[1]:
-            # They match if the centre location matches
-            if one[1] == two[1]:
-                return True
-    return False
-
-def md(a,b):
-    return abs(a[0]-b[0]) + abs(a[1]-b[1])
-
-tested = {}
-too_far = {}
-total = 0
-for path1 in paths:
-    for path2 in paths:
-        id = '_'.join([str(p) for p in sorted([path1, path2])])
-        if id in too_far.keys():
-            continue
-        else:
-            # The start points must be 2 apart
-            if md(path1[0], path2[0]) != 2:
-                too_far[id] = 1
-                continue
-        if path1 == path2 or id in tested.keys():
-            continue
-        tested[id] = 1
-        if test(path1, path2):
-            total += 1
+for r in range(1,max_r):
+    for c in range(1,max_c):
+        if grid[r][c] == 'A':
+            # Check for crosses of MAS
+            if (((grid[r-1][c-1] == 'M' and grid[r+1][c+1] == 'S') or
+                 (grid[r-1][c-1] == 'S' and grid[r+1][c+1] == 'M')) and
+                ((grid[r+1][c-1] == 'M' and grid[r-1][c+1] == 'S') or
+                 (grid[r+1][c-1] == 'S' and grid[r-1][c+1] == 'M'))): total += 1
 
 print('Part 2:', total)
