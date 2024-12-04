@@ -5,8 +5,6 @@ max_c = len(grid[0])-1
 
 string = 'XMAS'
 
-paths = []
-
 def get_moves(loc,char,d=None):
     l = []
     r,c = loc
@@ -22,22 +20,20 @@ def get_moves(loc,char,d=None):
     return l
 
 # Need a depth-first search recursion
-def dfs(loc, char=0, d=None, p=[]):
+def dfs(loc, char=0, d=None):
     global string
     global paths
     total = 0
     r,c = loc
     # If this character is an S then we've found the end of a string
     if grid[r][c] == string[-1]:
-        # End of the path but only from M
-        paths.append(p)
         return 1
     # Get possible moves for matching
     moves = get_moves(loc,string[char+1],d)
     for move in moves:
         loc,_d = move
         # Move to the next square
-        t = dfs(loc,char+1,_d,p+[loc])
+        t = dfs(loc,char+1,_d)
         total += t
     return total
 
@@ -46,7 +42,7 @@ total = 0
 for r in range(max_r+1):
     for c in range(max_c+1):
         if grid[r][c] == string[0]:
-            words = dfs((r,c), 0, None, [(r,c)])
+            words = dfs((r,c), 0, None)
             total += words
 
 print('Part 1:', total)
