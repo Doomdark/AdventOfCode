@@ -70,19 +70,19 @@ def solve(start, direction, part2=False, extra=None):
         loc = nloc
         d = ndir
 
-    return loop if part2 else len(visited)
+    return loop if part2 else visited
 
-print('Part 1:', solve(start, direction))
+part1 = solve(start, direction)
+print('Part 1:', len(part1))
 
-# For each location, add an obstruction and solve to see if we're in a loop
+# For each location visited in part1 add an obstruction and solve to see if we're in a loop
 
 loop_count = 0
-for r in range(max_r+1):
-    for c in range(max_c+1):
-        # Don't add a new obstruction in an existing location
-        if (r,c) in obstructions:
-            continue
-        direction = (-1,0)
-        loop_count += solve(start, direction, part2=True, extra=(r,c))
+for r,c in part1:
+    # Don't add a new obstruction in an existing location
+    if (r,c) == start:
+        continue
+    direction = (-1,0)
+    loop_count += solve(start, direction, part2=True, extra=(r,c))
 
 print('Part 2:', loop_count)
