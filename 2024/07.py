@@ -51,6 +51,8 @@ def solve(val, nums, part2=False):
                     SUM *= nums[n]
                 else:
                     SUM += nums[n]
+            if SUM > val:
+                break
         if SUM == val:
             good = True
             break
@@ -60,22 +62,28 @@ def solve(val, nums, part2=False):
             break
     return val if good else 0
 
-def part1():
+def dfs(val, items, part2=False):
+    if items[0] > val:
+        return False
+    if len(items) == 1:
+        return val == items[0]
+    if dfs(val, [items[0]+items[1]] + items[2:], part2):
+        return True
+    if dfs(val, [items[0]*items[1]] + items[2:], part2):
+        return True
+    if part2:
+        if dfs(val, [int(''.join([str(items[0]), str(items[1])]))] + items[2:], part2):
+            return True
+    return False
+
+def solve2(part2=False):
     total = 0
     for val, nums_list in eqs.items():
-        # nums is a list so iterate over it
         for nums in nums_list:
-            total += solve(val, nums)
+            if dfs(val, nums, part2):
+            #if solve(val, nums, part2):
+                total += val
     return total
 
-print('Part 1:', part1())
-
-def part2():
-    total = 0
-    for val, nums_list in eqs.items():
-        # nums is a list so iterate over it
-        for nums in nums_list:
-            total += solve(val, nums, True)
-    return total
-
-print('Part 2:', part2())
+print('Part 1:', solve2())
+print('Part 2:', solve2(True))
