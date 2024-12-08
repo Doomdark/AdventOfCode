@@ -33,7 +33,6 @@ def solve(val, nums, part2=False):
     operators = [ops-1]*(len(nums)-1)
     # Do the maths
     while(not good):
-        good_ops = []
         # Start with the first number
         SUM = nums[0]
         # Apply the operators with the other numbers
@@ -43,20 +42,15 @@ def solve(val, nums, part2=False):
             if not part2:
                 if operator == 1:
                     SUM *= nums[n]
-                    good_ops.append('*')
                 else:
                     SUM += nums[n]
-                    good_ops.append('+')
             else: # part 2
                 if  operator == 2:
                     SUM = int(''.join([str(SUM), str(nums[n])]))
-                    good_ops.append('|')
                 elif operator == 1:
                     SUM *= nums[n]
-                    good_ops.append('*')
                 else:
                     SUM += nums[n]
-                    good_ops.append('+')
         if SUM == val:
             good = True
             break
