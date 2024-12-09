@@ -1,4 +1,4 @@
-layout = open('09test.in').read().strip()
+layout = open('09.in').read().strip()
 
 from collections import defaultdict
 
@@ -21,8 +21,7 @@ for n,char in enumerate(layout):
     else:
         for i in range(num):
             free.add(loc+i)
-        gaps[free_id] = (loc,num)
-        free_id += 1
+        gaps[loc] = num
     loc += num
 
 # Move the rightmost things to the left
@@ -49,7 +48,7 @@ def p(thing):
             l += '.'
     print(l)
 
-p(used)
+#p(used)
 total = sum([x*y for x,y in used.items()])
 print('Part 1:', total)
 
@@ -66,10 +65,9 @@ move_id = max(ids.keys())
 while (move_id >= 0):
     mloc,mnum = ids[move_id]
     newgaps = copy.copy(gaps)
-    for fid,val in sorted(gaps.items()):
-        gloc,gnum = val
+    for gloc,gnum in sorted(gaps.items()):
         # If the file fits then move it
-        if gloc > mloc:
+        if gloc >= mloc:
             break
         if gnum >= mnum:
             # Move the real file in the layout
@@ -78,11 +76,12 @@ while (move_id >= 0):
             ngnum = gnum-mnum
             ngloc = gloc+mnum
             if ngnum > 0:
-                newgaps[fid] = (ngloc,ngnum)
+                newgaps[ngloc] = ngnum
+            del newgaps[gloc]
             break
     gaps = newgaps
     move_id -= 1
 
-p(used)
+#p(used)
 total = sum([x*y for x,y in used.items()])
 print('Part 2:', total)
