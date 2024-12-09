@@ -2,38 +2,19 @@ layout = open('09.in').read().strip()
 
 import copy
 
-used = {}
-ids  = {}
-gaps = {}
 LIST = []
-
-ID = 0
-loc = 0
+ID   = 0
 
 for n,char in enumerate(layout):
     num = int(char)
-    # file
+    # File
     if n%2 == 0:
         for i in range(num):
             LIST.append(ID)
-            used[loc+i] = ID
-        ids[ID] = (loc,num)
         ID += 1
     else: # Gap
         for i in range(num):
             LIST.append('.')
-        gaps[loc] = num
-    loc += num
-
-def p(thing):
-    l = ''
-    m = max(thing.keys())
-    for i in range(m+1):
-        if i in thing.keys():
-            l += '{}'.format(thing[i])
-        else:
-            l += '.'
-    print(l)
 
 def get_frees(LIST):
     return iter([c for c,x in enumerate(LIST) if x == '.' ])
@@ -56,6 +37,36 @@ while True:
 
 total = sum([x*y for x,y in enumerate(LIST[:last_used])])
 print('Part 1:', total)
+
+# -- Part 2 --
+
+used = {}
+ids  = {}
+gaps = {}
+ID  = 0
+loc = 0
+
+for n,char in enumerate(layout):
+    num = int(char)
+    # File
+    if n%2 == 0:
+        for i in range(num):
+            used[loc+i] = ID
+        ids[ID] = (loc,num)
+        ID += 1
+    else: # Gap
+        gaps[loc] = num
+    loc += num
+
+def p(thing):
+    l = ''
+    m = max(thing.keys())
+    for i in range(m+1):
+        if i in thing.keys():
+            l += '{}'.format(thing[i])
+        else:
+            l += '.'
+    print(l)
 
 def move(used,src,dst,length):
     for i in range(length):
