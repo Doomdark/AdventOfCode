@@ -59,7 +59,7 @@ def move(used,src,dst,length):
     return used
 
 used = used_orig
-p(used)
+#p(used)
 free = free_orig
 move_id = max(ids.keys())
 while (move_id >= 0):
