@@ -1,42 +1,29 @@
 layout = open('09.in').read().strip()
 
-from collections import defaultdict
+import copy
 
-used = defaultdict()
-free = set()
-ids = defaultdict()
-gaps = defaultdict()
+used = {}
+ids  = {}
+gaps = {}
+LIST = []
 
 ID = 0
 loc = 0
-free_id = 0
+
 for n,char in enumerate(layout):
     num = int(char)
     # file
     if n%2 == 0:
         for i in range(num):
+            LIST.append(ID)
             used[loc+i] = ID
         ids[ID] = (loc,num)
         ID += 1
-    else:
+    else: # Gap
         for i in range(num):
-            free.add(loc+i)
+            LIST.append('.')
         gaps[loc] = num
     loc += num
-
-# Move the rightmost things to the left
-import copy
-free_orig = copy.copy(free)
-used_orig = copy.copy(used)
-
-while (len(free)>0):
-    gap = min(free)
-    mover = max(used.keys())
-    if gap > mover:
-        break
-    used[gap] = used[mover]
-    del used[mover]
-    free.remove(gap)
 
 def p(thing):
     l = ''
@@ -48,8 +35,26 @@ def p(thing):
             l += '.'
     print(l)
 
-#p(used)
-total = sum([x*y for x,y in used.items()])
+def get_frees(LIST):
+    return iter([c for c,x in enumerate(LIST) if x == '.' ])
+
+def get_useds(LIST):
+    return iter(reversed([c for c,x in enumerate(LIST) if x != '.' ]))
+
+frees = get_frees(LIST)
+useds = get_useds(LIST)
+last_used = None
+
+while True:
+    next_free = next(frees)
+    next_used = next(useds)
+    if next_free > next_used:
+        break
+    else:
+        LIST[next_free] = LIST[next_used]
+    last_used = next_used
+
+total = sum([x*y for x,y in enumerate(LIST[:last_used])])
 print('Part 1:', total)
 
 def move(used,src,dst,length):
@@ -58,9 +63,6 @@ def move(used,src,dst,length):
         del used[src+i]
     return used
 
-used = used_orig
-#p(used)
-free = free_orig
 move_id = max(ids.keys())
 while (move_id >= 0):
     mloc,mnum = ids[move_id]
@@ -82,6 +84,5 @@ while (move_id >= 0):
     gaps = newgaps
     move_id -= 1
 
-#p(used)
 total = sum([x*y for x,y in used.items()])
 print('Part 2:', total)
