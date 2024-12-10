@@ -25,8 +25,7 @@ while True:
     next_used = next(useds)
     if next_free > next_used:
         break
-    else:
-        LIST[next_free] = LIST[next_used]
+    LIST[next_free] = LIST[next_used]
     last_used = next_used
 
 total = sum([x*y for x,y in enumerate(LIST[:last_used])])
