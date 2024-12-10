@@ -16,14 +16,8 @@ for n,char in enumerate(layout):
         for i in range(num):
             LIST.append('.')
 
-def get_frees(LIST):
-    return iter([c for c,x in enumerate(LIST) if x == '.' ])
-
-def get_useds(LIST):
-    return iter(reversed([c for c,x in enumerate(LIST) if x != '.' ]))
-
-frees = get_frees(LIST)
-useds = get_useds(LIST)
+frees = iter([c for c,x in enumerate(LIST) if x == '.' ])
+useds = iter(reversed([c for c,x in enumerate(LIST) if x != '.' ]))
 last_used = None
 
 while True:
