@@ -16,14 +16,8 @@ for n,char in enumerate(layout):
         for i in range(num):
             LIST.append('.')
 
-def get_frees(LIST):
-    return iter([c for c,x in enumerate(LIST) if x == '.' ])
-
-def get_useds(LIST):
-    return iter(reversed([c for c,x in enumerate(LIST) if x != '.' ]))
-
-frees = get_frees(LIST)
-useds = get_useds(LIST)
+frees = iter([c for c,x in enumerate(LIST) if x == '.' ])
+useds = iter(reversed([c for c,x in enumerate(LIST) if x != '.' ]))
 last_used = None
 
 while True:
@@ -31,8 +25,7 @@ while True:
     next_used = next(useds)
     if next_free > next_used:
         break
-    else:
-        LIST[next_free] = LIST[next_used]
+    LIST[next_free] = LIST[next_used]
     last_used = next_used
 
 total = sum([x*y for x,y in enumerate(LIST[:last_used])])
