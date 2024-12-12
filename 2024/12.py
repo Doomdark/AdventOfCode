@@ -1,4 +1,4 @@
-lines = open('12test4.in').read().splitlines()
+lines = open('12test5.in').read().splitlines()
 
 from collections import defaultdict
 
@@ -78,9 +78,6 @@ def move(loc, direction):
 import time
 
 def get_sides(area):
-    # A single point has 4 sides
-    #if len(area) == 1:
-    #    return 4
     # Start at a corner as edges start there. We're counting the corners really.
     min_c = min([c for r,c in area])
     min_r = min([r for r,c in area if c == min_c])
@@ -128,15 +125,31 @@ for line in lines:
     
 total = 0
 
+areas = set()
+
+class Area:
+    def __init__(self, name, area, sides):
+        self.name = name
+        self.area = area
+        self.sides = sides
+
 for name, area_list in regions.items():
     for area in area_list:
         # Get the sides counts
         print(name, area)
         _area = get_area(area)
         _sides, visited = get_sides(area)
-        print(_area, _sides)
-        total += _area * _sides
+        areas.add(Area(name, area, sides))
+        #print(_area, _sides)
+        #total += _area * _sides
 
 # At this point we have all the outer side counts.
+# Now we have to determine if any of the areas have sub-areas contained within them.
+# Assume those sub-areas won't have sub-sub-areas...
+for area1 in areas:
+    for area2 in areas:
+        if area1 == area2: continue
+        # Test if area2 has all of its squares enclosed by any of area1's squares
+        
 
 print('Part 2:', total)
