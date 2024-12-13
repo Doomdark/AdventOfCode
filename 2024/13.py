@@ -32,13 +32,14 @@ class Machine:
         return cheapest or 0
 
     def part2(self):
-        # Looks like a least common multiple problem
-        gcd_ax = lcm(self.a[0], self.prize[0])
-        gcd_bx = lcm(self.b[0], self.prize[0])
-        gcd_ay = lcm(self.a[1], self.prize[1])
-        gcd_by = lcm(self.b[1], self.prize[1])
-        print(gcd_ax, gcd_bx, gcd_ay, gcd_by)
-        wins = []
+        A = ((self.prize[1]*self.a[0] - self.prize[0]*self.a[1])/
+             (self.a[0]*self.b[1] - self.a[1]*self.b[0]))
+        B = ((self.prize[0]*self.b[1] - self.prize[1]*self.b[0])/
+             (self.a[0]*self.b[1] - self.a[1]*self.b[0]))
+        if A == int(A) and B == int(B):
+            return A*3 + B
+        else:
+            return 0
 
     def __str__(self):
         return ', '.join([str(self.a), str(self.b), str(self.prize)])
@@ -70,10 +71,12 @@ def init(adder):
 # print('Part1:', total)
 
 adder = 10000000000000
-
+adder = 0
+total = 0
 machines = []
 
 init(adder)
 for m in machines:
     print(m)
-    m.part2()
+    total += m.part2()
+print('Part2:', total)
