@@ -94,6 +94,6 @@ def part2(robots):
         if len(adjacents) >= len(robots)//2:
             print_grid(robots)
             print('Part 2:', i)
-            break
+            return
 
 part2(init())
