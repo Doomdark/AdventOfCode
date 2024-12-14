@@ -1,6 +1,7 @@
 lines = open('14.in').read().splitlines()
 
 import math
+from collections import deque
 
 X = 101
 Y = 103
@@ -70,13 +71,21 @@ def print_grid(robots):
                 l += '.'
         print(l)
 
-def adjacent(r, locations):
-    # Is this robot adjacent to any other robot?
-    rx,ry = r.p
-    for dx,dy in [(0,1),(0,-1),(1,0),(-1,0)]:
-        if (rx+dx,ry+dy) in locations:
-            return True
-    return False
+def flood(r, locations):
+    Q = []
+    SEEN = set()
+    adj = 0
+    Q.append(r.p)
+    while Q:
+        p = Q.pop()
+        if p in SEEN: continue
+        SEEN.add(p)
+        for dx,dy in [(0,1),(0,-1),(1,0),(-1,0)]:
+            np = (p[0]+dx,p[1]+dy)
+            if np in locations:
+                adj += 1
+                Q.append(np)
+    return adj
 
 def part2(robots):
     i = 0
@@ -88,12 +97,10 @@ def part2(robots):
             r.move()
             locations.add(r.p)
         for r in robots:
-            if adjacent(r,locations):
-                adjacents.append(r)
-        # If there are lots of adjacent robots then it's probably the picture so print it out
-        if len(adjacents) >= len(robots)//2:
-            print_grid(robots)
-            print('Part 2:', i)
-            return
+            # If a flood fill contains a 1/4 or more of the robots then that's the picture
+            if flood(r, locations) >= len(robots)//4:
+                print_grid(robots)
+                print('Part 2:', i)
+                return
 
 part2(init())
