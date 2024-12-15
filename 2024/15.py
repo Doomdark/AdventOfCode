@@ -81,16 +81,26 @@ def move(m,loc):
     # Also move the robot
     return (lr+dr,lc+dc)
 
-def print_grid(m, loc):
-    print('\nMove {}:'.format(m))
+CLEAR      = '\033[2J'
+DEFAULT    = '\033[0m'
+BOLD_RED   = '\033[31;1m'
+BOLD_GREEN = '\033[32;1m'
+GREY       = '\033[38;5;8m'
+
+import time
+
+def print_grid(m, loc, i=0, t=0):
+    print('{}Move {} ({} of {}):'.format(CLEAR,m,i,t))
     for r in range(R):
         l = ''
         for c in range(C):
-            if   (r,c) in walls: l += '#'
-            elif (r,c) in boxes: l += boxes[(r,c)]
-            elif (r,c) == loc: l += '@'
+            if   (r,c) in walls: l += '{}#{}'.format(GREY,DEFAULT)
+            elif (r,c) in boxes: l += '{}{}{}'.format(BOLD_RED,boxes[(r,c)],DEFAULT)
+            elif (r,c) == loc:   l += '{}@{}'.format(BOLD_GREEN,DEFAULT)
             else: l += '.'
         print(l)
+
+    time.sleep(0.05)
 
 for m in moves:
     nloc = move(MOVES[m],loc)
@@ -131,9 +141,13 @@ for r,line in enumerate(lines):
 
 R += 1
 C += 1
+t = len(moves)
 
-for m in moves:
+visual = False
+
+for i,m in enumerate(moves):
     nloc = move(MOVES[m],loc)
+    if visual: print_grid(m, nloc, i+1, t)
     loc = nloc
 
 total = sum([r*100 + c for r,c in boxes if boxes[(r,c)] == '['])
