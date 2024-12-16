@@ -22,7 +22,7 @@ RIGHT = {(-1,0):(0,1), (0,1):(1,0), (1,0):(0,-1), (0,-1):(-1,0)}
 
 def solve(start, end):
     Q = []
-    heapq.heappush(Q, (start,0,set(),(0,1),[]) )
+    heapq.heappush(Q, (start, 0, set(), (0,1), []) )
 
     min_cost = None
     best_paths = defaultdict()
