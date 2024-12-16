@@ -26,10 +26,14 @@ def print_grid(path):
             else: l += '.'
         print(l)
 
-def solve(start, end, start_dir=(1,0)):
+def solve(start, end, start_dir=(1,0), reverse=False):
     Q = []
-    heapq.heappush(Q, (start,0,set(),start_dir,[]) )
-    
+    if reverse:
+        for dr,dc in [(1,0),(-1,0),(0,1),(0,-1)]:
+            heapq.heappush(Q, (start,0,set(),(dr,dc),[]) )
+    else:
+        heapq.heappush(Q, (start,0,set(),start_dir,[]) )
+
     min_cost = None
     nodes = defaultdict()
     best_paths = defaultdict()
@@ -81,7 +85,7 @@ print('Part 1:', min_cost)
 #print_grid(best_paths[min_cost])
 
 #_, p2a_paths = solve(E,S,(-1,0))
-_, p2b_paths, p2_nodes = solve(E,S,(0,-1))
+_, p2b_paths, p2_nodes = solve(E,S,(0,-1), True)
 
 OK = set()
 for r in range(R):
