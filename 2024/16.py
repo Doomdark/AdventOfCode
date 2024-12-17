@@ -30,6 +30,13 @@ def solve(start, end):
 
     while Q:
         loc, cost, SEEN, dir, path = heapq.heappop(Q)
+        # If the path cost is already higher than the min cost then this path is bogus
+        if min_cost is not None and cost > min_cost:
+            continue
+        # Have we reached here before?
+        if (loc,dir) in nodes.keys():
+            # If the current cost on entering from the same direction is higher than however we got here before then ignore this path
+            if cost > nodes[(loc,dir)]: continue
         # Accumulate the path
         newpath = path + [loc]
         # Reached the end of the line. Well it's allllllllright... ridin' around in the breeze...
@@ -48,13 +55,6 @@ def solve(start, end):
         # Nope, new location
         _SEEN = copy.copy(SEEN)
         _SEEN.add((loc,dir))
-        # If the path cost is already higher than the min cost then this path is bogus
-        if min_cost is not None and cost >= min_cost:
-            continue
-        # Have we reached here before?
-        if (loc,dir) in nodes.keys():
-            # If the current cost on entering from the same direction is higher than however we got here before then ignore this path
-            if cost > nodes[(loc,dir)]: continue
         # Add the cost for this node
         nodes[(loc,dir)] = cost
         # Current r,c
