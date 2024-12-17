@@ -65,9 +65,13 @@ print('Part 1:', ','.join([str(x) for x in output]))
 
 from z3 import Optimize, BitVec
 
+# Get the oprimize guy from the z3 library
 opt = Optimize()
+# Make a suitably-sized bit vector to store the result
 s = BitVec('s',64)
+# Initial values, with s as a
 a,b,c = s,0,0
+# This is the program for each output value. Add the solver constraint at the end.
 for x in P:
     b = a % 8
     b = b ^ 5
