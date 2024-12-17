@@ -75,7 +75,7 @@ for x in P:
     b = b ^ c
     a = a >> 3
     b = b ^ 6
-    # Add the output constraint. b&8 must equal x.
+    # Add the output constraint. b%8 must equal x.
     opt.add((b%8) == x)
 # Find the smallest solution for s
 opt.minimize(s)
