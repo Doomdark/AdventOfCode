@@ -1,7 +1,6 @@
 lines = open('17.in').read().splitlines()
 
 A,B,C,P,PC,output = 0,0,0,None,0,[]
-V = False
 
 for line in lines:
     if   line.startswith('Register A:'): A = int(line.split(': ')[1])
@@ -9,23 +8,20 @@ for line in lines:
     elif line.startswith('Register C:'): C = int(line.split(': ')[1])
     elif line.startswith('Program:'):    P = [int(a) for a in line.split(': ')[1].split(',')]
 
+# Run until the PC jumps outside the length of the program
 while PC < len(P):
     # Next instruction
     I,O = P[PC],P[PC+1]
-    CO = O
     # Combo operand
+    CO = O
     if   O == 4: CO = A
     elif O == 5: CO = B
     elif O == 6: CO = C
     elif O == 7: raise
-    # Has the program stopped
-    if V: print('S', PC,I,O,CO)
     # Instructions
     if I == 0: # adv
         d = 2**CO
-        if V: print('ADV', A, d)
         A = A // d
-        if V: print(' -> A', A)
         PC += 2
     elif I == 1: # bxl
         B = B ^ O
@@ -36,13 +32,11 @@ while PC < len(P):
     elif I == 3: # jnz
         if A == 0: PC += 2
         else: PC = O
-        if V: print('JNZ', A, O)
     elif I == 4: # bxc
         B = B ^ C
         PC += 2
     elif I == 5: # out
         o = CO % 8
-        if V: print('OUT', CO, o)
         output.append(o)
         PC += 2
     elif I == 6: # bdv
@@ -53,8 +47,6 @@ while PC < len(P):
         d = 2**CO
         C = A // d
         PC += 2
-
-    if V: print('E', PC, A, B, C)
 
 print('Part 1:', ','.join([str(x) for x in output]))
 
@@ -83,9 +75,11 @@ for x in P:
     b = b ^ c
     a = a >> 3
     b = b ^ 6
+    # Add the output constraint. b&8 must equal x.
     opt.add((b%8) == x)
-# Start at 0
-opt.add(a==0)
+# Find the smallest solution for s
 opt.minimize(s)
-assert str(opt.check()) == 'sat'
+# Run the optimizer
+opt.check()
+# Get the result
 print('Part 2:', opt.model().eval(s))
