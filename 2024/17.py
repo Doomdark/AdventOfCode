@@ -55,7 +55,7 @@ print('Part 1:', ','.join([str(x) for x in output]))
 # 1,5, B = B ^ 5
 # 7,5, C = A >> B  <-- this is where A can be any number
 # 4,5, B = B ^ C
-# 0,3, A = A >> 3
+# 0,3, A = A >> 3  <-- Shift the bottoms 3 bits off the end of A
 # 1,6, B = B ^ 6
 # 5,5, output B
 # 3,0  PC = 0
