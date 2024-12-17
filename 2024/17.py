@@ -53,7 +53,7 @@ print('Part 1:', ','.join([str(x) for x in output]))
 # The program loop looks like this:
 # 2,4, B = A % 8
 # 1,5, B = B ^ 5
-# 7,5, C = A >> B
+# 7,5, C = A >> B  <-- this is where A can be any number
 # 4,5, B = B ^ C
 # 0,3, A = A >> 3
 # 1,6, B = B ^ 6
