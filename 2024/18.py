@@ -60,5 +60,5 @@ for end in range(len(bytes),1024,-1):
     for i in range(1024, end):
         walls.add(bytes[i])
     if solve(walls):
-        print('Part 2: {},{}'.format(bytes[end][0], bytes[end][1]))
+        print(f'Part 2: {bytes[end][0]},{bytes[end][1]}')
         exit()
