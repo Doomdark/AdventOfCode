@@ -46,6 +46,28 @@ print('Part 1:', solve(walls))
 
 # -- Part 2 --
 
+import copy
+walls_orig = copy.copy(walls)
+
+# Do a binary search to speed things up from that of below...
+l,r = 1024,len(bytes)
+# Run until l and r differ by 1
+while r-l != 1:
+    # Start with the 1024 byte point
+    walls = copy.copy(walls_orig)
+    # Where is the mid-point between l and r?
+    m = (l+r)//2
+    # Add the rest of the bytes from 1024 to the middle point
+    for i in range(1024, m):
+        walls.add(bytes[i])
+    # If there was a valid path then move the left point to the middle and do the next iteration
+    if solve(walls): l = m
+    # Otherwise move the right point to the middle
+    else: r = m
+
+print(f'Part 2: {bytes[l][0]},{bytes[l][1]}')
+exit()
+
 # Work backwards. Add all the bytes initially and check for a path.
 # The more bytes there are the fewer paths there will be to check.
 # Then run again with one fewer bytes.
