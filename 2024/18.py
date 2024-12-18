@@ -20,20 +20,17 @@ def solve(WALLS):
     # Find the shortest path to the exit
     Q = []
     SEEN = defaultdict(lambda:10**9)
-    DIST = None
     heapq.heappush(Q, (0, (0,0)) )
 
     while Q:
         dist, loc = heapq.heappop(Q)
-        # Reached the end?
+        # Reached the end first? That's the shortest distance.
         if loc == (X,Y):
-            # If the distance travelled is shorter then update DIST
-            if DIST is None or dist < DIST:
-                DIST = dist
+            return dist
         # Took same/longer to get here than before?
         if dist >= SEEN[loc]:
             continue
-        # New location
+        # New distance for this location
         SEEN[loc] = dist
         x,y = loc
         # Try to go in all directions
@@ -43,7 +40,7 @@ def solve(WALLS):
             # On the grid and not a wall?
             if 0<=nx<=X and 0<=ny<=Y and (nx,ny) not in WALLS:
                 heapq.heappush(Q, (dist+1, (nx,ny)) )
-    return DIST
+    return None
 
 print('Part 1:', solve(walls))
 
@@ -62,6 +59,6 @@ for end in range(len(bytes),1024,-1):
     # Add the rest of the bytes
     for i in range(1024, end):
         walls.add(bytes[i])
-    if solve(walls) is not None:
+    if solve(walls):
         print('Part 2: {},{}'.format(bytes[end][0], bytes[end][1]))
         exit()
