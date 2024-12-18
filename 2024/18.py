@@ -52,9 +52,21 @@ def solve(WALLS):
 
 print('Part 1:', solve(walls))
 
-# Keep letting bytes fall and just run the solver until it finds the answer. Takes just over 9 seconds on my Mac Mini.
-for i in range(1024, len(bytes)):
-    walls.add(bytes[i])
-    if solve(walls) == None:
-        print('Part 2: {},{}'.format(bytes[i][0], bytes[i][1]))
+# -- Part 2 --
+
+# Work backwards. Add all the bytes initially and check for a path.
+# The more bytes there are the fewer paths there will be to check.
+# Then run again with one fewer bytes.
+# Find the first solution where there is a valid path then the answer is the previous byte.
+import copy
+walls_orig = copy.copy(walls)
+
+# Add all the bytes until the decreasing end value
+for end in range(len(bytes),1024,-1):
+    walls = copy.copy(walls_orig)
+    # Add the rest of the bytes
+    for i in range(1024, end):
+        walls.add(bytes[i])
+    if solve(walls) is not None:
+        print('Part 2: {},{}'.format(bytes[end][0], bytes[end][1]))
         exit()
