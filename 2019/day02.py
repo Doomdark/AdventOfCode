@@ -23,7 +23,7 @@ def run():
         elif opcode == 99:
             return program[0]
         else:
-            print "Unknown opcode at addr", addr
+            print("Unknown opcode at addr", addr)
 
 # Part 1
 noun = 12
@@ -33,11 +33,11 @@ verb = 2
 program[1] = noun
 program[2] = verb
 
-print "Part 1:", run()
+print("Part 1:", run())
 
 # Part 2
-for noun in xrange(0,100):
-    for verb in xrange(0,100):
+for noun in range(0,100):
+    for verb in range(0,100):
         # Re-initialise the program
         program = copy.deepcopy(initial_program)
         # Replace program entries 1 and 2 as directed
@@ -45,5 +45,5 @@ for noun in xrange(0,100):
         program[2] = verb
         # Run the program
         if run() == 19690720:
-            print "Part 2: 100 * noun + verb =", 100 * noun + verb
+            print("Part 2: 100 * noun + verb =", 100 * noun + verb)
             sys.exit()

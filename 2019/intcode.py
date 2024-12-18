@@ -2,7 +2,7 @@
 # Immediate mode = 1
 # Relative mode  = 2
 
-import copy, Queue, threading
+import copy, queue, threading
 
 class Intcode(threading.Thread):
 
@@ -10,8 +10,8 @@ class Intcode(threading.Thread):
         threading.Thread.__init__(self)
         self.memory = copy.deepcopy(program)
         self.addr = 0
-        self.input_queue  = Queue.Queue()
-        self.output_queue = Queue.Queue()
+        self.input_queue  = queue.Queue()
+        self.output_queue = queue.Queue()
         self._exit = False
         self.running = False
         self.last_output = 0
@@ -25,7 +25,7 @@ class Intcode(threading.Thread):
         a = None
         try:
             a = self.output_queue.get(block, timeout)
-        except Queue.Empty:
+        except queue.Empty:
             a = None
         return a
 
@@ -39,9 +39,9 @@ class Intcode(threading.Thread):
             opcode      = instruction % 100
 
             # Extract the parameter modes from the instruction
-            param1_mode = (instruction / 100) % 10
-            param2_mode = (instruction / 1000) % 10
-            param3_mode = (instruction / 10000) % 10
+            param1_mode = (instruction // 100) % 10
+            param2_mode = (instruction // 1000) % 10
+            param3_mode = (instruction // 10000) % 10
 
             # Get the values of param1 and param2 for the specified opcodes and parameter modes from the instruction
             if opcode in [1, 2, 4, 5, 6, 7, 8, 9]:
@@ -75,7 +75,8 @@ class Intcode(threading.Thread):
                 else:
                     try:
                         _input = self.input_queue.get(block=True, timeout=1)
-                    except Queue.Empty:
+                        print("({}) Input...".format(_input))
+                    except queue.Empty:
                         return
                     self.running = True
                 if   param1_mode == 0: self.memory[self.memory[self.addr+1]] = int(_input)
@@ -116,14 +117,15 @@ class Intcode(threading.Thread):
                 #print "RBO:", self.relative_base_offset
                 self.addr += 2
             elif opcode == 99: # Exit()
-                #print "Intcode exit"
+                print("Intcode exit")
                 #self._exit = True
-                import sys
-                sys.exit(1)
+                #import sys
+                #sys.exit(1)
                 self.running = False
                 return self.memory[0]
             else:
-                print "Unknown opcode at addr", self.addr
+                print("Unknown opcode at addr", self.addr)
+                return
 
             # Exit the thread if we're killed
             if self.kill:

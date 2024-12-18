@@ -1,4 +1,5 @@
-import intcode, copy
+import copy
+from intcode import Intcode
 
 program = []
 for i in range(10000):
@@ -12,16 +13,18 @@ with open("day05_input.txt","r") as f:
             program[j] = int(i)
             j += 1
 
-source = copy.deepcopy(program)
-
 # Part 1 - input 1
-print "Part 1:"
-intcode.run(source, 1)
+print("Part 1:")
+d = Intcode(program)
+d.input_value = 1
+d.run()
+print(d.get())
 
 # Reinitialise the program
 
-source = copy.deepcopy(program)
-
 # Part 2 - input 5
-print "Part 2:"
-intcode.run(source, 5)
+print("Part 2:")
+d = Intcode(program)
+d.input_value = 5
+d.run()
+print(d.get())

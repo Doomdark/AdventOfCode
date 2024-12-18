@@ -55,7 +55,7 @@ def draw_screen(coords):
         if x > max_x: max_x = x
         if y > max_y: max_y = y
 
-    print max_x, max_y
+    print(max_x, max_y)
 
     for y in range(max_y+1):
         row = ''
@@ -65,8 +65,8 @@ def draw_screen(coords):
                 row += tile_map[coords[coord]]
             else:
                 row += '.'
-        print row
-    print
+        print(row)
+    print()
 
 
 # Part 2
@@ -126,7 +126,7 @@ def play():
         #if paddle_x is not None and ball_x is not None:
         d.put(joystick_move)
 
-        print "-- Loop {} - Score = {} - B,P = ({},{}) - Joystick moving {} --".format(loop, score, ball_x, paddle_x, joystick[joystick_move])
+        print("-- Loop {} - Score = {} - B,P = ({},{}) - Joystick moving {} --".format(loop, score, ball_x, paddle_x, joystick[joystick_move]))
         draw_screen(coords)
 
         # Any blocks left?
@@ -141,4 +141,4 @@ def play():
         #     return score
 
 score = play()
-print "Part 2:", score
+print("Part 2:", score)
