@@ -19,7 +19,7 @@ for i in range(1024):
 def solve(WALLS):
     # Find the shortest path to the exit
     Q = []
-    SEEN = defaultdict()
+    SEEN = defaultdict(lambda:10**9)
     DIST = None
     heapq.heappush(Q, (0, (0,0)) )
 
@@ -30,14 +30,9 @@ def solve(WALLS):
             # If the distance travelled is shorter then update DIST
             if DIST is None or dist < DIST:
                 DIST = dist
-        # Already taken longer to get here than the current minimum
-        if DIST is not None and dist > DIST:
+        # Took same/longer to get here than before?
+        if dist >= SEEN[loc]:
             continue
-        # Been here before?
-        if loc in SEEN:
-            # Took same/longer to get here than before?
-            if dist >= SEEN[loc]:
-                continue
         # New location
         SEEN[loc] = dist
         x,y = loc
