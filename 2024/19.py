@@ -32,8 +32,8 @@ print('Part 1:', possible)
 
 # -- Part 2 --
 
-# Got to count a gazillion possibilities in a tree so use a cache. Took me forever t orealise this.
-# The logic in the first part still works, you just have to add up everything.
+# Got to count a gazillion possibilities in a tree so use a cache. Took me forever to realise this. :(
+# The logic in the part 1 still works, you just have to add up everything.
 
 from functools import cache
 
