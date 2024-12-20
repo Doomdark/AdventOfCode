@@ -44,24 +44,29 @@ def get_cheat_paths(loc, CHEAT_TIME):
 
     # Check each square
     for r in range(R):
+        # Already too far away in rows?
+        if abs(r-loc[0]) > CHEAT_TIME: continue
+        # Iterate over the columns
         for c in range(C):
+            # Already too far away in columns?
+            if abs(c-loc[1]) > CHEAT_TIME: continue
             # Skip walls
             if grid[r][c] == '#': continue
             # Other location to test against
             oloc = (r,c)
             # Skip identical locations
             if loc == oloc: continue
-            # Ignore paths that are not going to be a shortcut
-            if DISTANCES[oloc] < DISTANCES[loc]: continue
             # Manhattan distance between the two points
             direct = md(loc,oloc)
-            # Check the direct route is shorter than the allowed cheat time
-            if direct <= CHEAT_TIME:
-                # Normal on-track distance
-                normal_dist = DISTANCES[oloc] - DISTANCES[loc]
-                # Is the difference in the paths GEq 100?
-                if normal_dist - direct >= 100:
-                    ans.add((loc,oloc))
+            # Is the Manhattan distance too far?
+            if direct > CHEAT_TIME: continue
+            # Ignore paths that are not going to be a forward shortcut
+            if DISTANCES[oloc] < DISTANCES[loc]: continue
+            # Normal distance between the two points if you take the track
+            normal_dist = DISTANCES[oloc] - DISTANCES[loc]
+            # Is the difference in the paths GEq 100?
+            if normal_dist - direct >= 100:
+                ans.add((loc,oloc))
     return ans
 
 cheats = set()
