@@ -9,11 +9,7 @@ S = None
 
 for r,line in enumerate(grid):
     for c,char in enumerate(line):
-        if char == 'S':
-            S = (r,c)
-            break
-    if S is not None:
-        break
+        if char == 'S': S = (r,c)
 
 DISTANCES = {}
 
@@ -29,7 +25,7 @@ while Q:
     for dr,dc in [(-1,0), (0,-1), (1,0), (0,1)]:
         # Next location to visit
         nr,nc = r+dr,c+dc
-        # On the grid and not a wall? Or maybe disabled to ignore walls.
+        # On the grid and not a wall
         if 0<=nr<R and 0<=nc<C and grid[nr][nc] != '#':
             heapq.heappush(Q, (dist+1, (nr,nc)))
 
@@ -42,12 +38,12 @@ def get_cheat_paths(loc, CHEAT_TIME):
     the on-track paths vs Manhattan distance between the points is >=100.'''
     ans = set()
 
-    # Check each square
-    for r in range(R):
+    # Check each row
+    for r in range(1,R-1):
         # Already too far away in rows?
         if abs(r-loc[0]) > CHEAT_TIME: continue
         # Iterate over the columns
-        for c in range(C):
+        for c in range(1,C-1):
             # Already too far away in columns?
             if abs(c-loc[1]) > CHEAT_TIME: continue
             # Skip walls
@@ -69,22 +65,12 @@ def get_cheat_paths(loc, CHEAT_TIME):
                 ans.add((loc,oloc))
     return ans
 
-cheats = set()
-for r in range(R):
-    for c in range(C):
-        # Don't check walls
-        if grid[r][c] == '#': continue
-        cheats.update( get_cheat_paths((r,c), 2) )
+for part,cheat_time in [(1,2),(2,20)]:
+    cheats = set()
+    for r in range(1,R-1):
+        for c in range(1,C-1):
+            # Don't check walls
+            if grid[r][c] == '#': continue
+            cheats.update( get_cheat_paths((r,c), cheat_time) )
 
-print('Part 1:', len(cheats))
-
-# -- Part 2 --
-
-cheats = set()
-for r in range(R):
-    for c in range(C):
-        # Don't check walls
-        if grid[r][c] == '#': continue
-        cheats.update( get_cheat_paths((r,c), 20) )
-
-print('Part 2:', len(cheats))
+    print(f'Part {part}:', len(cheats))
