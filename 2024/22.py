@@ -10,10 +10,10 @@ def pseudo(secret):
 
 part1 = 0
 
-# Store the total sales of bananas for each sequence for all secrets
+# Store the sales of bananas for each sequence for all secrets
 totals = defaultdict(int)
 
-# Process eachsecret
+# Process each secret
 for secret in secrets:
     # Make a 4-long queue of changes
     changes = deque(maxlen=4)
