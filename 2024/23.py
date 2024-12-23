@@ -64,6 +64,7 @@ print('Part 1:', part1)
 part2 = None
 size = 4
 while True:
+    # Get the first connected group of size 'size'
     l = get_connected(list(Nodes), 0, size, [], True)
     # If we didn't find anything of that size then the previous value is the answer.
     if l is None:
