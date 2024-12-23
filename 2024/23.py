@@ -71,4 +71,4 @@ while True:
     part2 = l
     size += 1
 
-print('Part 2:', ','.join(sorted(list(part2))))
+print('Part 2:', ','.join(sorted(part2)))
