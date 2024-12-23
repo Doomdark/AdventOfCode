@@ -1,15 +1,11 @@
 lines = open('23.in').read().splitlines()
 
 from collections import defaultdict
-from itertools import combinations
 
-Nodes = set()
 Adjacent = defaultdict(list)
 
 for line in lines:
     l,r = line.split('-')
-    Nodes.add(l)
-    Nodes.add(r)
     Adjacent[r].append(l)
     Adjacent[l].append(r)
 
@@ -23,7 +19,7 @@ def get_connected(nodes, depth, max_depth, path, part2=False):
             return []
         else:
             # Add the accumulated sorted path to the set of paths
-            Paths.add(tuple(sorted(list(path))))
+            Paths.add(tuple(sorted(path)))
             return
 
     # For each node in the provided list try to get the connections
@@ -34,7 +30,7 @@ def get_connected(nodes, depth, max_depth, path, part2=False):
         # end of the tree is reached really fast as we only care how deep it is.
         if part2:
             adjacent_nodes = iter(adjacent_nodes)
-        # Now find the connectivity on all the nodes in the adjacent list
+        # Now find the connectivity on all the nodes in the adjacent list. Accumulate path.
         ret = get_connected(adjacent_nodes, depth+1, max_depth, path + [n], part2)
         # For part 2, if the function returned a list then add this node to the list and return it.
         # Otherwise there were no connections.
@@ -46,8 +42,10 @@ def get_connected(nodes, depth, max_depth, path, part2=False):
     # If we got here then there are no nodes to connect to
     return
 
+# For part 1 the path to the path to the max depth is accumulated as we go up the tree
+
 # Get all the connected nodes of groups of 3
-get_connected(list(Nodes), 0, 3, [])
+get_connected(list(Adjacent.keys()), 0, 3, [])
 
 part1 = 0
 for p in Paths:
@@ -65,7 +63,7 @@ part2 = None
 size = 4
 while True:
     # Get the first connected group of size 'size'
-    l = get_connected(list(Nodes), 0, size, [], True)
+    l = get_connected(list(Adjacent.keys()), 0, size, [], True)
     # If we didn't find anything of that size then the previous value is the answer.
     if l is None:
         break
