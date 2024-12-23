@@ -46,6 +46,7 @@ def get_connected(nodes, depth, max_depth, path, part2=False):
     # If we got here then there are no nodes to connect to
     return
 
+# Get all the connected nodes of groups of 3
 get_connected(list(Nodes), 0, 3, [])
 
 part1 = 0
