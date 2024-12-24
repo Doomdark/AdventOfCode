@@ -1,8 +1,7 @@
-from collections import defaultdict
-import copy
 import graphviz
 
 class Gate:
+    'Base gate functions.'
     def __init__(self,a,b,z,aw,bw,zw):
         self.a = a
         self.b = b
@@ -35,6 +34,7 @@ class Gate:
         return ' '.join([self.aw, self.OP, self.bw, '->', self.zw, str(self.a), str(self.b), str(self.z)])
 
 class AND(Gate):
+    'AND gate operation'
     def __init__(self, a,b,z,aw,bw,zw):
         Gate.__init__(self,a,b,z,aw,bw,zw)
         self.OP = '&'
@@ -42,6 +42,7 @@ class AND(Gate):
         self.z = self.a & self.b
 
 class OR(Gate):
+    'OR gate operation'
     def __init__(self, a,b,z,aw,bw,zw):
         Gate.__init__(self,a,b,z,aw,bw,zw)
         self.OP = '|'
@@ -49,21 +50,25 @@ class OR(Gate):
         self.z = self.a | self.b
 
 class XOR(Gate):
+    'XOR gate operation'
     def __init__(self, a,b,z,aw,bw,zw):
         Gate.__init__(self,a,b,z,aw,bw,zw)
         self.OP = '^'
     def op(self):
         self.z = self.a ^ self.b
 
-def init(filename='24.in', do_graph=False, problem_bit=0):
+def init(filename='24.in'):
+    'Read the input file and construct wires and gates data structures.'
     lines = open(filename).read().splitlines()
-    wires = defaultdict()
+    wires = {}
     gates = []
 
     for line in lines:
+        # First second is x and y initial values
         if ':' in line:
             wire, initial = line.split(': ')
             wires[wire] = int(initial)
+        # Second section is the logic gates
         elif '->' in line:
             aw, op, bw, eq, zw = line.split()
             a = wires.get(aw, None)
@@ -71,14 +76,14 @@ def init(filename='24.in', do_graph=False, problem_bit=0):
             z = wires.get(zw, None)
             g = None
             if   op == 'AND': g = AND(a,b,z,aw,bw,zw)
-            elif op == 'OR' : g = OR(a,b,z,aw,bw,zw)
+            elif op == 'OR' : g = OR (a,b,z,aw,bw,zw)
             elif op == 'XOR': g = XOR(a,b,z,aw,bw,zw)
             gates.append(g)
 
     return wires, gates
 
-# Simulate until all the zXX wires have a value
 def simulate(gates):
+    'Simulate the gates until they stop changing.'
     while True:
         changed = False
         for gate in gates:
@@ -88,36 +93,35 @@ def simulate(gates):
         if not changed:
             return gates
 
-# Get all the z wire values:
-wires, gates = init()
-part1 = ''
-g = simulate(gates)
-outputs = {x.zw:str(x.z) for x in g if x.zw.startswith('z')}
-for name, value in sorted(outputs.items(), reverse=True):
-    part1 += value
+def evaluate(wires, gates):
+    'Calculate the z output using the given gates.'
+    g = simulate(gates)
+    # Work out the z value by sorting the wires int the correct bit order: z00,z01,z02,etc., but then reverse them to get the real value.
+    answer = ''
+    outputs = {x.zw:str(x.z) for x in g if x.zw.startswith('z')}
+    for name, value in sorted(outputs.items(), reverse=True):
+        answer += value
+    return answer
 
-print('Part 1:', int(part1,2))
+# Run part 1
+wires, gates = init()
+print('Part 1:', int(evaluate(wires, gates), 2) )
 
 # -- Part 2 --
 
 # Modify part 2's input when we determine the bits that are incorrect.
 # Start with the LSBs and work upwards
 
-#  Run the simulation with a modified input including the swaps to date to get the circuit's answer.
+# Run the simulation with a modified input including the swaps to date to get the circuit's answer.
 wires, gates = init('24part2.in')
-answer = ''
-g = simulate(gates)
-outputs = {x.zw:str(x.z) for x in g if x.zw.startswith('z')}
-for name, value in sorted(outputs.items(), reverse=True):
-    answer += value
-actual = f'0b{answer}'
+actual = evaluate(wires, gates)
 
 # Calculate the expected answer given the x and y inputs
 x,y = '',''
 for name, value in sorted(wires.items(), reverse=True):
     if name.startswith('x'): x += str(value)
     if name.startswith('y'): y += str(value)
-expected = bin(int(x,2) + int(y,2))
+expected = bin(int(x,2) + int(y,2))[2:]
 
 # Which bits in the output are wrong?
 #print('ACTUAL', actual)
