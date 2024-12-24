@@ -127,7 +127,7 @@ expected = bin(int(x,2) + int(y,2))[2:]
 #print('ACTUAL', actual)
 #print('EXPECT', expected)
 
-# Make a digraph to display the circuit. Highlight the bit in error in red.
+# Make a digraph to display the circuit. Highlight error bit in red.
 # Alter the input once you've worked out which two wire swaps cause that bit to be wrong.
 # In the end I had to change the input values because I only had 3 differences for my x
 # and y input values. The expected and actual values matched after I had fixed only 3 pairs
