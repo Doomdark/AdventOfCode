@@ -100,11 +100,15 @@ print('Part 1:', int(part1,2))
 
 # -- Part 2 --
 
-# This doesn't do the right thing yet...
+# Make a digraph to display the circuit. Highlight the bit in error in red.
+# Then alter the input once you've worked out which two wire swaps cause that bit to be wrong.
+# In the end I had to change the input values because I only had 3 differences for
+# my x and y input values. The expected and actual outputs  matched after I fixed 3 pairs of wires.
 def make_digraph(bit):
     graph = graphviz.Digraph("24")
     for gate in gates:
-        graph.edge(gate.aw, gate.zw, f'{gate.OP} {gate.z}')
+        graph.edge(gate.aw, gate.zw, f'{gate.OP} {gate.a}')
+        graph.edge(gate.bw, gate.zw, f'{gate.OP} {gate.b}')
     graph.node(bit, bit, style='filled', fillcolor='red')
     graph.render()
 
@@ -112,7 +116,7 @@ def make_digraph(bit):
 # Start with the LSBs and work upwards
 
 #  Re-run part 1 with the modified input
-wires, gates = init('24.in')
+wires, gates = init('24part2.in')
 part1 = ''
 g = simulate(gates)
 outputs = {x.zw:str(x.z) for x in g if x.zw.startswith('z')}
@@ -128,18 +132,22 @@ for name, value in sorted(wires.items(), reverse=True):
 expected = bin(int(x,2) + int(y,2))
 
 # Which bits in the output are wrong?
-print('ACTUAL', actual)
-print('EXPECT', expected)
+#print('ACTUAL', actual)
+#print('EXPECT', expected)
 
 j = 0
-for i in range(len(expected[2:])-1,0,-1):
+for i in range(len(expected)-1,0,-1):
     if actual[i] != expected[i]:
         print(f'Bit {j} differs')
-        # Make a digraph of the design now
-        # I used someone else's digraph generator to solve the problwm.
-        # Add a generator here when there's more time.
-        #make_digraph('z{:02d}'.format(j))
+        # Make a digraph of the broken design to analyse
+        make_digraph('z{:02d}'.format(j))
         exit()
     j += 1
 
-print('MATCH')
+# These are the swaps I had to do
+diffs = ['z21', 'shh', # bit 21
+         'vgs', 'dtk', # bit 26
+         'z33', 'dqr', # bit 33
+         'pfw', 'z39'] # bit 39
+
+print('Part 2:', ','.join(sorted(diffs)))
