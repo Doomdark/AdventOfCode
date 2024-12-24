@@ -100,31 +100,19 @@ print('Part 1:', int(part1,2))
 
 # -- Part 2 --
 
-# Make a digraph to display the circuit. Highlight the bit in error in red.
-# Then alter the input once you've worked out which two wire swaps cause that bit to be wrong.
-# In the end I had to change the input values because I only had 3 differences for
-# my x and y input values. The expected and actual outputs  matched after I fixed 3 pairs of wires.
-def make_digraph(bit):
-    graph = graphviz.Digraph("24")
-    for gate in gates:
-        graph.edge(gate.aw, gate.zw, f'{gate.OP} {gate.a}')
-        graph.edge(gate.bw, gate.zw, f'{gate.OP} {gate.b}')
-    graph.node(bit, bit, style='filled', fillcolor='red')
-    graph.render()
-
 # Modify part 2's input when we determine the bits that are incorrect.
 # Start with the LSBs and work upwards
 
-#  Re-run part 1 with the modified input
+#  Run the simulation with a modified input including the swaps to date to get the circuit's answer.
 wires, gates = init('24part2.in')
-part1 = ''
+answer = ''
 g = simulate(gates)
 outputs = {x.zw:str(x.z) for x in g if x.zw.startswith('z')}
 for name, value in sorted(outputs.items(), reverse=True):
-    part1 += value
-actual = f'0b{part1}'
+    answer += value
+actual = f'0b{answer}'
 
-# Print out the expected values
+# Calculate the expected answer given the x and y inputs
 x,y = '',''
 for name, value in sorted(wires.items(), reverse=True):
     if name.startswith('x'): x += str(value)
@@ -135,16 +123,30 @@ expected = bin(int(x,2) + int(y,2))
 #print('ACTUAL', actual)
 #print('EXPECT', expected)
 
+# Make a digraph to display the circuit. Highlight the bit in error in red.
+# Alter the input once you've worked out which two wire swaps cause that bit to be wrong.
+# In the end I had to change the input values because I only had 3 differences for my x
+# and y input values. The expected and actual values matched after I had fixed only 3 pairs
+# of wires using my original x and y values.
+def make_digraph(bit):
+    graph = graphviz.Digraph("24")
+    for gate in gates:
+        graph.edge(gate.aw, gate.zw, f'{gate.OP} {gate.a}')
+        graph.edge(gate.bw, gate.zw, f'{gate.OP} {gate.b}')
+    graph.node(bit, bit, style='filled', fillcolor='red')
+    graph.render()
+
+# Which bit is the LSB in error?
 j = 0
 for i in range(len(expected)-1,0,-1):
     if actual[i] != expected[i]:
         print(f'Bit {j} differs')
         # Make a digraph of the broken design to analyse
-        make_digraph('z{:02d}'.format(j))
+        make_digraph(f'z{j:02d}')
         exit()
     j += 1
 
-# These are the swaps I had to do
+# These are the wire swaps I had to do to get the right answer
 diffs = ['z21', 'shh', # bit 21
          'vgs', 'dtk', # bit 26
          'z33', 'dqr', # bit 33
