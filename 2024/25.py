@@ -1,7 +1,7 @@
 lines = open('25.in').read().splitlines()
 
-locks   = []
-keys    = []
+locks   = set()
+keys    = set()
 row     = 0
 item    = [None] * 5
 is_lock = False
@@ -20,8 +20,8 @@ for line in lines:
                 else:
                     if char == '#': item[col] = row
             if (row,col) == (6,4):
-                if is_lock: locks.append(item)
-                else:       keys.append(item)
+                if is_lock: locks.add(tuple(item))
+                else:       keys.add (tuple(item))
                 item = [None] * 5
         row += 1
 
