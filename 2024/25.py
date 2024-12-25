@@ -1,41 +1,35 @@
 lines = open('25.in').read().splitlines()
 
-keys  = []
-locks = []
-
-row = 0
-item = set()
+locks   = []
+keys    = []
+row     = 0
+item    = [None] * 5
+is_lock = False
 
 for line in lines:
     if not line:
         row = 0
-        item = set()
+        is_lock = False
     else:
+        if row == 0 and line[0] == '#':
+            is_lock = True
         for col,char in enumerate(line):
-            if char == '#': item.add((row,col))
+            if item[col] is None:
+                if is_lock:
+                    if char == '.': item[col] = row-1
+                else:
+                    if char == '#': item[col] = row
             if (row,col) == (6,4):
-                if (0,0) in item: locks.append(item)
-                else:             keys.append(item)
+                if is_lock: locks.append(item)
+                else:       keys.append(item)
+                item = [None] * 5
         row += 1
 
-FITS = set()
+fits = set()
 
 for lock in locks:
-    lock_heights = []
-    for lcol in range(5):
-        lock_heights.append(max([r for r,c in lock if c == lcol]))
-    
     for key in keys:
-        key_heights = []
-        for kcol in range(5):
-            key_heights.append(min([r for r,c in key if c == kcol]))
+        if all([k>l for k,l in zip(key,lock)]):
+            fits.add(tuple(str(key)+str(lock)))
 
-        fits = True
-        for n in range(len(key_heights)):
-            if key_heights[n] <= lock_heights[n]:
-                fits = False
-                
-        if fits:
-            FITS.add(tuple(str(key_heights)+str(lock_heights)))
-            
-print('Part 1:', len(FITS))
+print('Part 1:', len(fits))
