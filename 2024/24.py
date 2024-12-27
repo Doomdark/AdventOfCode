@@ -137,6 +137,10 @@ def make_digraph(bit):
     for gate in gates:
         graph.edge(gate.aw, gate.zw, f'{gate.OP} {gate.a}')
         graph.edge(gate.bw, gate.zw, f'{gate.OP} {gate.b}')
+        if   gate.OP == '^': graph.node(gate.zw, gate.zw, style='filled', fillcolor='green')
+        elif gate.OP == '|': graph.node(gate.zw, gate.zw, style='filled', fillcolor='cyan')
+        elif gate.OP == '&': graph.node(gate.zw, gate.zw, style='filled', fillcolor='magenta')
+    # Fill the currently-broken bit with red to make it obvious
     graph.node(bit, bit, style='filled', fillcolor='red')
     graph.render()
 
