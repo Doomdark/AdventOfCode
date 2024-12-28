@@ -1,19 +1,13 @@
 from intcode import Intcode
 import threading
+from collections import defaultdict
 
-program = []
+program = defaultdict(int)
 
-with open("day11_input.txt",'r') as f:
-    for line in f.readlines():
-        program = [int(x) for x in line.rstrip().split(',')]
-
-p = []
-for i in range(100000):
-    p.append(0)
-a = 0
-for i in program:
-    p[a] = i
-    a += 1
+#with open("day11_input.txt",'r') as f:
+#    for line in f.readlines():
+#        program = [int(x) for x in line.rstrip().split(',')]
+program.update({i:int(x) for i,x in enumerate(open("day11_input.txt").read().rstrip().split(','))})
 
 class Computer(Intcode, threading.Thread):
     def __init__(self, program):
@@ -30,7 +24,7 @@ class Computer(Intcode, threading.Thread):
         c.input_queue.put(value)
 
 # Start the computer
-c = Computer(p)
+c = Computer(program)
 c.start()
 
 # Part 1
@@ -68,12 +62,9 @@ def paint(col):
     # Initialise the start panel
     colours[coord] = colour
 
-    while 1:
+    while not c._exit:
         # Indicate the colour of the current panel
-        if colours.has_key(coord):
-            _col = colours[coord]
-        else: # Haven't got this one. Assume it's black.
-            _col = 0
+        _col = colours.get(coord, 0)
 
         # Add the colour to the input queue
         c.put(_col)
@@ -96,8 +87,8 @@ def paint(col):
         coord = (x,y)
 
         # Exit if we're done
-        if c._exit:
-            break
+        #if c._exit:
+        #    break
 
     return colours
 
@@ -109,17 +100,18 @@ def draw_grid(colours):
     min_y = min([y for x,y in colours.keys()])
 
     # Print the grid
-    for x in range(min_x, max_x+1):
-        for y in range(min_y, max_y+1):
+    for y in range(max_y, min_y-1,-1):
+        l = ''
+        for x in range(min_x, max_x+1):
             coord = (x,y)
-            if colours.has_key(coord):
-                print col_map[colours[coord]],
+            if coord in colours:
+                l += col_map[colours[coord]]
             else:
-                print '.',
-        print
+                l += '.'
+        print(l)
 
 colours = paint(0)
-print "Part 1:", len(colours)
+print("Part 1:", len(colours))
 draw_grid(colours)
 
 # Exit the computer thread
@@ -128,13 +120,13 @@ c.join()
 # Part 2
 
 # Re-initialise the computer
-c = Computer(p)
+c = Computer(program)
 c.start()
 
 # Work out the max/min extents of the grid to draw
 colours = paint(1)
 
-print "Part 2:"
+print("Part 2:")
 draw_grid(colours)
 
 # Exit the computer thread

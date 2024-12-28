@@ -2,8 +2,7 @@ import intcode, itertools, sys, threading
 
 from intcode import Intcode
 
-with open("day07_input.txt",'r') as f:
-    program = [int(x) for x in f.read().rsplit()[0].split(',')]
+program = {i:int(x) for i,x in enumerate(open("day07_input.txt",'r').read().strip().split(','))}
 
 #program = [3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0]
 #program = [3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5]
@@ -49,10 +48,10 @@ for perm in itertools.permutations(phases, 5):
     if b > max:
         max = b
 
-print "Part 1: ", max
+print("Part 1: ", max)
 
 # Part 2 has different phases
-phases = [9,7,8,5,6]
+phases = [9,8,7,6,5]
 
 # Initialise the amps for each permutation
 count = 0
@@ -78,4 +77,4 @@ for perm in itertools.permutations(phases, 5):
         if amps[0]._exit:
             break
 
-print "Part 2: ", max
+print("Part 2: ", max)

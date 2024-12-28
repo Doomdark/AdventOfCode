@@ -21,6 +21,9 @@ class Intcode(threading.Thread):
         self.output_count = 0
         self.kill = False
 
+    def set_input_value(self, i):
+        self.input_value = i
+
     def get(self, block=True, timeout=1):
         a = None
         try:
@@ -75,7 +78,7 @@ class Intcode(threading.Thread):
                 else:
                     try:
                         _input = self.input_queue.get(block=True, timeout=1)
-                        print("({}) Input...".format(_input))
+                        #print("({}) Input...".format(_input))
                     except queue.Empty:
                         return
                     self.running = True
@@ -88,7 +91,7 @@ class Intcode(threading.Thread):
                 self.last_output = _output
                 self.output_queue.put(_output)
                 self.addr += 2
-                #print "({}) Output...".format(self.output_count)
+                #print("({}) Output...".format(_output))
                 #self.output_count += 1
             elif opcode == 5: # Jump if true
                 if param1 != 0:
@@ -117,10 +120,8 @@ class Intcode(threading.Thread):
                 #print "RBO:", self.relative_base_offset
                 self.addr += 2
             elif opcode == 99: # Exit()
-                print("Intcode exit")
-                #self._exit = True
-                #import sys
-                #sys.exit(1)
+                #print("Intcode exit")
+                self._exit = True
                 self.running = False
                 return self.memory[0]
             else:

@@ -31,7 +31,7 @@ c.input_queue.put(1)
 
 while 1:
     output = c.output_queue.get()
-    print "Part 1:", output
+    print("Part 1:", output)
     if c._exit: break
 
 
@@ -43,5 +43,5 @@ c.input_queue.put(2)
 
 while 1:
     output = c.output_queue.get()
-    print "Part 2:", output
+    print("Part 2:", output)
     if c._exit: break

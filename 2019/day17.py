@@ -1,25 +1,52 @@
-import sys
-sys.path.append('/home/rwilkinson/Python')
-
 from intcode import Intcode
 from collections import defaultdict
 
 # Program memory
 program = defaultdict(int)
-
-# Read the intcode program
-with open("day17_input.txt",'r') as f:
-    for line in f.readlines():
-        for i,x in enumerate(line.rstrip().split(',')):
-            program[i] = int(x)
+program.update({i:int(x) for i,x in enumerate(open("day17_input.txt").read().rstrip().split(','))})
 
 # Run the computer
-c = Intcode(program)
-c.start()
+computer = Intcode(program)
+computer.start()
+
+l = ''
+r,c = 0,0
+scaffold = set()
+MAXR,MAXC = 0,0
+MINR,MINC = 0,0
+
+def intersection(r,c):
+    result = True
+    for dr,dc in [(0,-1),(0,1),(1,0),(-1,0)]:
+        nr,nc = r+dr,c+dc
+        if (nr,nc) not in scaffold:
+            return False
+    return result
+
+def draw_grid():
+    for r in range(MINR,MAXR+1):
+        l = ''
+        for c in range(MINC,MAXC+1):
+            if (r,c) in scaffold: l += 'O' if intersection(r,c) else '#'
+            else: l += '.'
+        print(l)
 
 while True:
-    a = c.get()
+    a = computer.get()
     if a is not None:
-        print chr(a),
+        if a == 10:
+            r += 1
+            c = 0
+        else:
+            c += 1
+            if a == 35:
+                scaffold.add((r,c))
     else:
+        MAXR = max([r for r,c in scaffold])
+        MAXC = max([c for r,c in scaffold])
+        MINR = min([r for r,c in scaffold])
+        MINC = min([c for r,c in scaffold])
+        #draw_grid()
+        intersections = sum([(r-MINR)*(c-MINC) for r,c in scaffold if intersection(r,c)])
+        print('Part 1:', intersections)
         break

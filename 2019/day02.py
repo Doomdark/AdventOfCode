@@ -45,5 +45,5 @@ for noun in range(0,100):
         program[2] = verb
         # Run the program
         if run() == 19690720:
-            print("Part 2: 100 * noun + verb =", 100 * noun + verb)
+            print("Part 2:", 100 * noun + verb)
             sys.exit()

@@ -1,30 +1,27 @@
-import copy
 from intcode import Intcode
+from collections import defaultdict
 
-program = []
-for i in range(10000):
-    program.append(0)
-
-# Read in the program
-with open("day05_input.txt","r") as f:
-    j = 0
-    for line in f.readlines():
-        for i in line.split(','):
-            program[j] = int(i)
-            j += 1
+program = defaultdict(int)
+line = open('day05_input.txt').read().strip()
+for i,code in enumerate([int(x) for x in line.split(',')]):
+    program[i] = code
 
 # Part 1 - input 1
-print("Part 1:")
 d = Intcode(program)
-d.input_value = 1
+d.set_input_value(1)
 d.run()
-print(d.get())
+while True:
+    o = d.get()
+    if o == 0:
+        continue
+    else:
+        print("Part 1:", o)
+        break
 
 # Reinitialise the program
 
 # Part 2 - input 5
-print("Part 2:")
 d = Intcode(program)
-d.input_value = 5
+d.set_input_value(5)
 d.run()
-print(d.get())
+print("Part 2:", d.get())

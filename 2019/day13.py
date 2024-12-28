@@ -4,10 +4,7 @@ from collections import defaultdict
 
 program = defaultdict(int)
 
-with open("day13_input.txt",'r') as f:
-    for line in f.readlines():
-        for i,x in enumerate(line.rstrip().split(',')):
-            program[i] = int(x)
+program.update({i:int(x) for i,x in enumerate(open("day13_input.txt").read().rstrip().split(','))})
 
 tile_map = {0:' ', # Empty
             1:'#', # Wall
@@ -19,31 +16,30 @@ joystick = { 0:'+',
             -1:'<',
              1:'>'}
 
-##### Part 1
-####def draw():
-####    # Start the computer
-####    c = Intcode(program)
-####    c.start()
-####
-####    coords = {}
-####    while 1:
-####        if c.running:
-####            x = c.get()
-####            y = c.get()
-####            t = c.get()
-####            coord = (x,y)
-####
-####            # Check what was in the current coordinate.
-####            # If a ball hits a block then it's destroyed.
-####            coords[coord] = t
-####
-####        else:
-####            if c._exit:
-####                return sum([(value == 2) for value in coords.itervalues()])
-####
-####blocks_remaining = draw()
-####
-####print "Part 1:", blocks_remaining
+# Part 1
+def draw():
+    # Start the computer
+    c = Intcode(program)
+    c.start()
+
+    coords = {}
+    while True:
+        if c.output_queue.qsize() > 0:
+            x = c.get()
+            y = c.get()
+            t = c.get()
+            coord = (x,y)
+
+            # Check what was in the current coordinate.
+            # If a ball hits a block then it's destroyed.
+            coords[coord] = t
+        else:
+            if c._exit:
+                return sum([(value == 2) for value in coords.values()])
+
+blocks_remaining = draw()
+
+print("Part 1:", blocks_remaining)
 
 # Part 2
 
@@ -61,7 +57,7 @@ def draw_screen(coords):
         row = ''
         for x in range(max_x+1):
             coord = (x,y)
-            if coords.has_key(coord):
+            if coord in coords:
                 row += tile_map[coords[coord]]
             else:
                 row += '.'
@@ -92,7 +88,9 @@ def play():
 
     blocks_left = 9999
 
-    while 1:
+    while True:
+
+        move = False
 
         # The game updates the paddle/ball by blanking the current ball in one frame and then adding it again in the next frame.
         # Move the joystick if the ball moves.
@@ -102,9 +100,12 @@ def play():
         y = d.get()
         t = d.get()
 
+        print(loop, x,y,t)
+
         # Score appears when x == -1
         if x == -1 and y == 0:
             score = t
+            print(loop, 'SCORE', score)
 
         else: # Otherwise it's a new coord
             coord = (x,y)
@@ -113,21 +114,27 @@ def play():
             # If a ball hits a block then it's destroyed.
             coords[coord] = t
 
-            if t == 3: paddle_x = x
-            if t == 4: ball_x   = x
+            if t == 3:
+                paddle_x = x
+                move = True
+            if t == 4:
+                ball_x = x
+                move = True
 
             # Where should the paddle go next?
-            if   ball_x > paddle_x: joystick_move =  1
-            elif ball_x < paddle_x: joystick_move = -1
-            else:                   joystick_move =  0
+            joystick_move = 0
+            if ball_x is not None and paddle_x is not None:
+                if   ball_x > paddle_x: joystick_move =  1
+                elif ball_x < paddle_x: joystick_move = -1
+                else:                   joystick_move =  0
 
         # Not every iteration needs an input... How do I get round that?
 
-        #if paddle_x is not None and ball_x is not None:
-        d.put(joystick_move)
+        if (paddle_x is not None) and (ball_x is not None) and move:
+            d.put(joystick_move)
 
         print("-- Loop {} - Score = {} - B,P = ({},{}) - Joystick moving {} --".format(loop, score, ball_x, paddle_x, joystick[joystick_move]))
-        draw_screen(coords)
+        #draw_screen(coords)
 
         # Any blocks left?
         #blocks_left = sum([(value == 2) for value in coords.itervalues()])
@@ -135,10 +142,10 @@ def play():
 
         loop += 1
 
-        # if d._exit:
-        #     print "Exited"
-        #     d.join()
-        #     return score
+        if d._exit:
+            print("Exited")
+            d.join()
+            return score
 
 score = play()
 print("Part 2:", score)

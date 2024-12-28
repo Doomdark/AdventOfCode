@@ -3,7 +3,7 @@ sys.path.append('/home/rwilkinson/Python')
 
 from intcode import Intcode
 from collections import defaultdict
-from networkx import nx
+import networkx as nx
 
 # Make a graph to store the maze into
 G = nx.Graph()
@@ -12,10 +12,12 @@ G = nx.Graph()
 program = defaultdict(int)
 
 # Read the intcode program
-with open("day15_input.txt",'r') as f:
-    for line in f.readlines():
-        for i,x in enumerate(line.rstrip().split(',')):
-            program[i] = int(x)
+#with open("day15_input.txt",'r') as f:
+#    for line in f.readlines():
+#        for i,x in enumerate(line.rstrip().split(',')):
+#            program[i] = int(x)
+
+program.update({i:int(x) for i,x in enumerate(open("day15_input.txt").read().rstrip().split(','))})
 
 # Run the computer
 c = Intcode(program)
@@ -61,7 +63,7 @@ class Droid:
         for y in range(min_y, max_y+1):
             row = ''
             for x in range(min_x, max_x+1):
-                if self.grid.has_key((x,y)):
+                if (x,y) in self.grid:
                     if (x,y) == self.coords:
                         row += 'D'
                     elif (x,y) == (0,0):
@@ -72,7 +74,7 @@ class Droid:
                     row += ' '
             maze += row + '\n'
 
-        print maze + '\n'
+        print(maze + '\n')
 
     def next_coord(self, direction):
         if   direction == 1: coord = (self.x+1, self.y)
@@ -170,14 +172,14 @@ grid = defaultdict(int)
 
 d = Droid(c, grid, G)
 
-while 1:
+while True:
     # Move the droid in the direction it is facing
     loc = d.move()
     if loc is not None:
          x, y = loc
          # Shortest path to oxygen:
          shortest = nx.dijkstra_path_length(G, (0,0), loc)
-         print "Part 1: {}".format(shortest)
+         print("Part 1: {}".format(shortest))
          # Part 2 requires working out the shortest path to each node from the O2 and then finding the longest of those
-         print "Part 2:", max([nx.dijkstra_path_length(G, loc, node) for node in G.nodes])
+         print("Part 2:", max([nx.dijkstra_path_length(G, loc, node) for node in G.nodes]))
          break
