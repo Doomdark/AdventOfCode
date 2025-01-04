@@ -61,14 +61,14 @@ def solve2(subs, string):
 from heapq import heappush, heappop
 
 q = deque()
-q.append((string, 0))
+q.append((0, string))
 
 target = 'e'
 visited = set()
 
 while q:
     #print(len(q))
-    lstring, steps = q.pop()
+    steps, lstring = q.pop()
 
     # Do all possible replacements
     for _string in list(solve2(subs, lstring)):
@@ -77,5 +77,5 @@ while q:
             exit(0)
         # Add the new string to the list
         if _string not in visited:
-            q.append((_string, steps+1))
+            q.append((steps+1, _string))
             visited.add(_string)
