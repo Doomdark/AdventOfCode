@@ -1,4 +1,3 @@
-import copy
 from collections import defaultdict
 import heapq
 
@@ -22,16 +21,16 @@ RIGHT = {(-1,0):(0,1), (0,1):(1,0), (1,0):(0,-1), (0,-1):(-1,0)}
 
 def solve(start, end):
     Q = []
-    heapq.heappush(Q, (start, 0, set(), (0,1), []) )
+    heapq.heappush(Q, (0, start, (0,1), []) )
 
-    min_cost = None
-    best_paths = defaultdict()
+    min_cost = 9999999999999
+    best_paths = defaultdict(set)
     nodes = defaultdict()
 
     while Q:
-        loc, cost, SEEN, dir, path = heapq.heappop(Q)
+        cost, loc, dir, path = heapq.heappop(Q)
         # If the path cost is already higher than the min cost then this path is bogus
-        if min_cost is not None and cost > min_cost:
+        if cost > min_cost:
             continue
         # Have we reached here before?
         if (loc,dir) in nodes.keys():
@@ -42,19 +41,11 @@ def solve(start, end):
         # Reached the end of the line. Well it's allllllllright... ridin' around in the breeze...
         if loc == end:
             # If the cost is lower than the current min cost then that's the best path
-            if min_cost is None or cost <= min_cost:
+            if cost <= min_cost:
                 min_cost = cost
                 # Store the best paths for part 2
-                if cost not in best_paths:
-                    best_paths[cost] = set()
                 best_paths[cost].update(set(newpath))
-                #print(min_cost)
             continue
-        # Been here before?
-        if (loc,dir) in SEEN: continue
-        # Nope, new location
-        _SEEN = copy.copy(SEEN)
-        _SEEN.add((loc,dir))
         # Add the cost for this node
         nodes[(loc,dir)] = cost
         # Current r,c
@@ -68,7 +59,7 @@ def solve(start, end):
                 # Cost is an extra +1000 if we didn't go in the same direction as last time
                 if dir != newdir:
                     cost_add += 1000
-                heapq.heappush(Q, (newloc, cost+cost_add, _SEEN, newdir, newpath) )
+                heapq.heappush(Q, (cost+cost_add, newloc, newdir, newpath) )
 
     return min_cost, best_paths
 
