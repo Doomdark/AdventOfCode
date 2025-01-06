@@ -3,17 +3,12 @@ import heapq
 
 lines = open('16.in').read().splitlines()
 
-R = len(lines)
-C = len(lines[0])
-
 S = None
 E = None
-walls = set()
 
 for r,line in enumerate(lines):
     for c,char in enumerate(line):
-        if   char == '#': walls.add((r,c))
-        elif char == 'S': S = (r,c)
+        if   char == 'S': S = (r,c)
         elif char == 'E': E = (r,c)
 
 LEFT  = {(-1,0):(0,-1), (0,-1):(1,0), (1,0):(0,1), (0,1):(-1,0)}
@@ -23,8 +18,8 @@ def solve(start, end):
     Q = []
     heapq.heappush(Q, (0, start, (0,1), []) )
 
-    min_cost = 9999999999999
-    best_paths = defaultdict(set)
+    min_cost = 9999999999
+    min_paths = None
     nodes = defaultdict()
 
     while Q:
@@ -33,7 +28,7 @@ def solve(start, end):
         if cost > min_cost:
             continue
         # Have we reached here before?
-        if (loc,dir) in nodes.keys():
+        if (loc,dir) in nodes:
             # If the current cost on entering from the same direction is higher than however we got here before then ignore this path
             if cost > nodes[(loc,dir)]: continue
         # Accumulate the path
@@ -41,10 +36,12 @@ def solve(start, end):
         # Reached the end of the line. Well it's allllllllright... ridin' around in the breeze...
         if loc == end:
             # If the cost is lower than the current min cost then that's the best path
-            if cost <= min_cost:
+            if cost < min_cost:
                 min_cost = cost
                 # Store the best paths for part 2
-                best_paths[cost].update(set(newpath))
+                min_paths = set(newpath)
+            else: # Same cost
+                min_paths.update(set(newpath))
             continue
         # Add the cost for this node
         nodes[(loc,dir)] = cost
@@ -53,17 +50,17 @@ def solve(start, end):
         # Try to go forward, left and right
         for dr,dc in [dir, LEFT[dir], RIGHT[dir]]:
             cost_add = 1
-            newloc = (r+dr,c+dc)
+            nr,nc = r+dr,c+dc
             newdir = (dr,dc)
-            if newloc not in walls:
+            if lines[nr][nc] != '#':
                 # Cost is an extra +1000 if we didn't go in the same direction as last time
                 if dir != newdir:
                     cost_add += 1000
-                heapq.heappush(Q, (cost+cost_add, newloc, newdir, newpath) )
+                heapq.heappush(Q, (cost+cost_add, (nr,nc), newdir, newpath) )
 
-    return min_cost, best_paths
+    return min_cost, min_paths
 
 min_cost, paths = solve(S,E)
 
 print('Part 1:', min_cost)
-print('Part 2:', len(paths[min_cost]))
+print('Part 2:', len(paths))
