@@ -35,7 +35,7 @@ for line in lines:
         for i in range(num):
             dial = (dial - 1) % 100
             # Is it zero?
-           if dial == 0: zeroes += 1
+            if dial == 0: zeroes += 1
     else:
         # Count each time the dial clicks past zero
         for i in range(num):
