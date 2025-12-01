@@ -75,7 +75,7 @@ with open("day03_input.txt","r") as f:
         wires.append(wire)
 
 # Now compare the wires for nearest-to-zero collisions
-print "Part 1: Nearest collision distance:", wires[0].nearest_collision_to_zero(wires[1])
+print("Part 1: Nearest collision distance:", wires[0].nearest_collision_to_zero(wires[1]))
 
 # Now read in the input again and count the step count for each collision to be lazy
 collisions = wires[0].get_collisions(wires[1])
@@ -107,4 +107,4 @@ for w0_coord, w0_steps in wires[0].collision_step_counts:
             if total < shortest:
                 shortest = total
 
-print "Part 2: Shortest collision step distance", shortest
+print("Part 2: Shortest collision step distance", shortest)
