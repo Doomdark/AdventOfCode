@@ -74,21 +74,21 @@ x,y,z,u,v,w = map(z3.Int, "xyzuvw")
 ts = [z3.Int("t{}".format(i)) for i in range(len(stones[:N]))]
 
 # Make a solver instance
-s = z3.Solver()
+so = z3.Solver()
 
 # Add the first 3 stones and times to the solver
 for t, s in zip(ts, stones[:N]):
     # Add each dimension's constraint equation for this stone.
     # (predicted) position + (time * (predicted) velocity) == (known) position + (time * (known) velocity)
-    s.add(x+t*u == s.px+t*s.vx)
-    s.add(y+t*v == s.py+t*s.vy)
-    s.add(z+t*w == s.pz+t*s.vz)
+    so.add(x+t*u == s.px+t*s.vx)
+    so.add(y+t*v == s.py+t*s.vy)
+    so.add(z+t*w == s.pz+t*s.vz)
 
 # Solve the constraints
-s.check()
+so.check()
 
 # Get the results
-m = s.model()
+m = so.model()
 
 # Sum the results of the x,y,z coordinates of the initial position of the rock
 answer = sum(m[c].as_long() for c in (x,y,z))

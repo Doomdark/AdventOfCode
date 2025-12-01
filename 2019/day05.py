@@ -8,7 +8,7 @@ for i,code in enumerate([int(x) for x in line.split(',')]):
 
 # Part 1 - input 1
 d = Intcode(program)
-d.set_input_value(1)
+d.put(1)
 d.run()
 while True:
     o = d.get()
@@ -22,6 +22,6 @@ while True:
 
 # Part 2 - input 5
 d = Intcode(program)
-d.set_input_value(5)
+d.put(5)
 d.run()
 print("Part 2:", d.get())

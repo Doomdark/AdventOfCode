@@ -2,9 +2,9 @@ import copy
 from intcode import Intcode
 from collections import defaultdict
 
-program = defaultdict(int)
+#program = defaultdict(int)
 
-program.update({i:int(x) for i,x in enumerate(open("day13_input.txt").read().rstrip().split(','))})
+program = {i:int(x) for i,x in enumerate(open("day13_input.txt").read().rstrip().split(','))}
 
 tile_map = {0:' ', # Empty
             1:'#', # Wall

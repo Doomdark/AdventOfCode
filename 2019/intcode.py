@@ -2,29 +2,23 @@
 # Immediate mode = 1
 # Relative mode  = 2
 
-import copy, queue, threading
+import queue, threading
+from collections import defaultdict
+
+DEBUG = False
 
 class Intcode(threading.Thread):
 
     def __init__(self, program):
         threading.Thread.__init__(self)
-        self.memory = copy.deepcopy(program)
+        self.memory = defaultdict(int)
+        self.memory.update(program)
         self.addr = 0
         self.input_queue  = queue.Queue()
         self.output_queue = queue.Queue()
-        self._exit = False
-        self.running = False
-        self.last_output = 0
-        self.relative_base_offset = 0
-        self.input_value = None
-        self.input_count = 0
-        self.output_count = 0
-        self.kill = False
+        self.relative_base = 0
 
-    def set_input_value(self, i):
-        self.input_value = i
-
-    def get(self, block=True, timeout=1):
+    def get(self, block=True, timeout=5):
         a = None
         try:
             a = self.output_queue.get(block, timeout)
@@ -36,8 +30,7 @@ class Intcode(threading.Thread):
         self.input_queue.put(value)
 
     def run(self):
-        while 1:
-            self.running = True
+        while True:
             instruction = self.memory[self.addr+0]
             opcode      = instruction % 100
 
@@ -49,85 +42,79 @@ class Intcode(threading.Thread):
             # Get the values of param1 and param2 for the specified opcodes and parameter modes from the instruction
             if opcode in [1, 2, 4, 5, 6, 7, 8, 9]:
                 # Adjust parameters for different parameter modes
-                if   param1_mode == 0: param1 = self.memory[self.memory[self.addr+1]]
-                elif param1_mode == 1: param1 = self.memory[self.addr+1]
-                else:                  param1 = self.memory[self.memory[self.addr+1]+self.relative_base_offset]
+                if   param1_mode == 0: src1 = self.memory[self.addr+1]
+                elif param1_mode == 1: src1 = self.addr+1
+                else:                  src1 = self.memory[self.addr+1]+self.relative_base
+                param1 = self.memory[src1]
 
-                if   param2_mode == 0: param2 = self.memory[self.memory[self.addr+2]]
-                elif param2_mode == 1: param2 = self.memory[self.addr+2]
-                else:                  param2 = self.memory[self.memory[self.addr+2]+self.relative_base_offset]
+                if   param2_mode == 0: src2 = self.memory[self.addr+2]
+                elif param2_mode == 1: src2 = self.addr+2
+                else:                  src2 = self.memory[self.addr+2]+self.relative_base
+                param2 = self.memory[src2]
+
+            if opcode in [1, 2, 7, 8]:
+                if   param3_mode == 0: dst = self.memory[self.addr+3]
+                elif param3_mode == 1: raise # Destinations are never immediate
+                else:                  dst = self.memory[self.addr+3]+self.relative_base
+
+            if opcode in [3]:
+                if   param1_mode == 0: dst = self.memory[self.addr+1]
+                elif param1_mode == 1: raise # Destinations are never immediate
+                else:                  dst = self.memory[self.addr+1]+self.relative_base
 
             if opcode == 1: # Add
-                result = param1 + param2
-                if   param3_mode == 0: self.memory[self.memory[self.addr+3]] = result
-                elif param3_mode == 1: self.memory[self.addr+3] = result
-                else:                  self.memory[self.memory[self.addr+3]+self.relative_base_offset] = result
+                result = int(param1 + param2)
+                self.memory[dst] = result
+                if DEBUG: print(f"[{self.addr:>3}] ADD [{src1:>3}:{param1:>3}] [{src2:>3}:{param2:>3}] -> [{dst:>3}:{result:>3}]")
                 self.addr += 4
             elif opcode == 2: # Multiply
-                result = param1 * param2
-                if   param3_mode == 0: self.memory[self.memory[self.addr+3]] = result
-                elif param3_mode == 1: self.memory[self.addr+3] = result
-                else:                  self.memory[self.memory[self.addr+3]+self.relative_base_offset] = result
+                result = int(param1 * param2)
+                self.memory[dst] = result
+                if DEBUG: print(f"[{self.addr:>3}] MUL [{src1:>3}:{param1:>3}] [{src2:>3}:{param2:>3}] -> [{dst:>3}:{result:>3}]")
                 self.addr += 4
             elif opcode == 3: # Input - always uses immediate parameter as the self.address
-                self.running = False
-                #print "({}) Input...".format(self.input_count)
-                #self.input_count += 1
-                if self.input_value is not None:
-                    _input = self.input_value
-                else:
-                    try:
-                        _input = self.input_queue.get(block=True, timeout=1)
-                        #print("({}) Input...".format(_input))
-                    except queue.Empty:
-                        return
-                    self.running = True
-                if   param1_mode == 0: self.memory[self.memory[self.addr+1]] = int(_input)
-                elif param1_mode == 1: self.memory[self.addr+1] = int(_input)
-                else:                  self.memory[self.memory[self.addr+1]+self.relative_base_offset] = int(_input)
+                try:
+                    _input = self.input_queue.get(block=True, timeout=5)
+                except queue.Empty:
+                    return
+                result = int(_input)
+                self.memory[dst] = result
+                if DEBUG: print(f"[{self.addr:>3}] IN  [{dst:>3}:{result:>3}]")
                 self.addr += 2
             elif opcode == 4: # Output
-                _output = param1
-                self.last_output = _output
-                self.output_queue.put(_output)
+                result = int(param1)
+                self.output_queue.put(result)
+                if DEBUG: print(f"[{self.addr:>3}] OUT [{result:>3}]")
                 self.addr += 2
-                #print("({}) Output...".format(_output))
-                #self.output_count += 1
             elif opcode == 5: # Jump if true
-                if param1 != 0:
-                    self.addr = param2
+                if int(param1) != 0:
+                    if DEBUG: print(f"[{self.addr:>3}] JiT [{src1:>3}:{param1:>3}]           -> [{param2:>3}]")
+                    self.addr = int(param2)
                 else: # Do nothing - just move on
                     self.addr += 3
             elif opcode == 6: # Jump if false
-                if param1 == 0:
-                    self.addr = param2
+                if int(param1) == 0:
+                    if DEBUG: print(f"[{self.addr:>3}] JiF [{src1:>3}:{param1:>3}]           -> [{param2:>3}]")
+                    self.addr = int(param2)
                 else: # Do nothing - just move on
                     self.addr += 3
             elif opcode == 7: # Less than
                 result = int(param1 < param2)
-                if   param3_mode == 0: self.memory[self.memory[self.addr+3]] = result
-                elif param3_mode == 1: self.memory[self.addr+3] = result
-                else:                  self.memory[self.memory[self.addr+3]+self.relative_base_offset] = result
+                self.memory[dst] = result
+                if DEBUG: print(f"[{self.addr:>3}] LT  [{src1:>3}:{param1:>3}] [{src2:>3}:{param2:>3}] -> [{dst:>3}:{result:>3}]")
                 self.addr += 4
             elif opcode == 8: # Equals
                 result = int(param1 == param2)
-                if   param3_mode == 0: self.memory[self.memory[self.addr+3]] = result
-                elif param3_mode == 1: self.memory[self.addr+3] = result
-                else:                  self.memory[self.memory[self.addr+3]+self.relative_base_offset] = result
+                self.memory[dst] = result
+                if DEBUG: print(f"[{self.addr:>3}] EQ  [{src1:>3}:{param1:>3}] [{src2:>3}:{param2:>3}] -> [{dst:>3}:{result:>3}]")
                 self.addr += 4
             elif opcode == 9: # Relative base offset adjust
-                self.relative_base_offset += param1
-                #print "RBO:", self.relative_base_offset
+                if DEBUG: print(f"[{self.addr:>3}] RBO -> {self.relative_base} + {param1}")
+                self.relative_base = self.relative_base + int(param1)
                 self.addr += 2
             elif opcode == 99: # Exit()
-                #print("Intcode exit")
-                self._exit = True
-                self.running = False
+                if DEBUG: print(f"[{self.addr:>3}] EXT")
                 return self.memory[0]
             else:
                 print("Unknown opcode at addr", self.addr)
-                return
-
-            # Exit the thread if we're killed
-            if self.kill:
                 return

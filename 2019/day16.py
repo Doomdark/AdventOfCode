@@ -1,4 +1,4 @@
-import sys
+import sys, copy
 
 base = [0, 1, 0, -1]
 
@@ -17,17 +17,40 @@ def make_multiplier(i, s, first):
                 o.append(b)
     return o
 
-def multiply(s, first):
-    o = []
-
-    for i in range(len(s)):
-        m = make_multiplier(i+1, s, first)
+SEEN = {}
+def do_multiply(s,i,first):
+    #if (s,i,first) in SEEN:
+    #    return SEEN[(s,i,first)]
+    #else:
+        _s = splitter(s)
+        m = make_multiplier(i+1, _s, first)
         # Ignore the first multiplier entry for the very first loop
         m = m[1:]
         # Truncate the array to the length of s
-        m = m[:len(s)]
+        m = m[:len(_s)]
         # Multiply the input signal array with the multiplier array
-        n = [x*s[j] for j,x in enumerate(m)]
+        n = [x*_s[j] for j,x in enumerate(m)]
+        # Now sum the products
+        q = abs(sum(n)) % 10
+        #print i, m, n, q
+        # Append the result to the array
+        #SEEN[(s,i,first)] = q
+        return q
+
+
+def multiply(s, first):
+    o = []
+    _s = splitter(s)
+
+    for i in range(len(_s)):
+        #q = do_multiply(s,i,first)
+        m = make_multiplier(i+1, _s, first)
+        # Ignore the first multiplier entry for the very first loop
+        m = m[1:]
+        # Truncate the array to the length of s
+        m = m[:len(_s)]
+        # Multiply the input signal array with the multiplier array
+        n = [x*_s[j] for j,x in enumerate(m)]
         # Now sum the products
         q = abs(sum(n)) % 10
         #print i, m, n, q
@@ -39,13 +62,14 @@ def multiply(s, first):
 first = True
 phase = 1
 
-signal = splitter(input_signal)
-print phase, signal[:8]
+signal = copy.copy(input_signal)
+print(phase, signal[:8])
 
 while True:
     signal = multiply(signal, first)
 
-    print phase, ''.join([str(x) for x in signal[:8]])
+    signal = ''.join([str(x) for x in signal[:8]])
+    #print(phase, signal)
 
     first = False
 
@@ -53,3 +77,5 @@ while True:
         break
 
     phase += 1
+
+print(phase, signal)

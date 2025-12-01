@@ -143,7 +143,7 @@ R += 1
 C += 1
 t = len(moves)
 
-visual = False
+visual = True
 
 for i,m in enumerate(moves):
     nloc = move(MOVES[m],loc)

@@ -24,4 +24,4 @@ for i in range(357253, 892942+1):
     if increasing and doubles:
         valid.append(i)
 
-print "Part 2:", len(valid)
+print("Part 2:", len(valid))

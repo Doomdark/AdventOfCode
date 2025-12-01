@@ -1,7 +1,5 @@
 import sys
-sys.path.append('/home/rwilkinson/Python')
-
-from networkx import nx
+import networkx as nx
 
 G = nx.Graph()
 
@@ -25,11 +23,11 @@ for n in nodes:
     direct   += 1
     indirect += nx.dijkstra_path_length(G,n,root) - 1
 
-print "Part 1:"
-print "Direct: {}, Indirect: {}".format(direct, indirect)
-print "Total: {}".format(direct+indirect)
+print("Part 1:")
+print("Direct: {}, Indirect: {}".format(direct, indirect))
+print("Total: {}".format(direct+indirect))
 
-print "Part 2:"
+print("Part 2:")
 src = "YOU"
 dst = "SAN"
-print "Transfers: {}".format(nx.dijkstra_path_length(G,src,dst)-2)
+print("Transfers: {}".format(nx.dijkstra_path_length(G,src,dst)-2))

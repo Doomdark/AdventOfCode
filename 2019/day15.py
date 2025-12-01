@@ -1,5 +1,4 @@
 import sys
-sys.path.append('/home/rwilkinson/Python')
 
 from intcode import Intcode
 from collections import defaultdict
@@ -10,13 +9,6 @@ G = nx.Graph()
 
 # Program memory
 program = defaultdict(int)
-
-# Read the intcode program
-#with open("day15_input.txt",'r') as f:
-#    for line in f.readlines():
-#        for i,x in enumerate(line.rstrip().split(',')):
-#            program[i] = int(x)
-
 program.update({i:int(x) for i,x in enumerate(open("day15_input.txt").read().rstrip().split(','))})
 
 # Run the computer
