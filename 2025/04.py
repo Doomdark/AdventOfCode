@@ -16,33 +16,36 @@ for r in range(R):
 
 movable = 0
 
-# How many are movable?
-for r, c in rolls:
+def is_movable(rolls,r,c):
     adjs = 0
+    # Look in each adjacent location
     for dr, dc in dirs:
+        # Check location
         nr, nc = dr+r, dc+c
         # Off-grid check
         if 0 <= nr < R and 0 <= nc < C:
+            # Is the check location also a roll?
             if (nr,nc) in rolls:
                 adjs += 1
-    # Fewer than 4 adjacents means it can be moved
+    # Fewer than 4 adjacent rolls means it can be moved
     if adjs < 4:
-        movable += 1
+        return True
+    # Otherwise not
+    return False
+
+# How many are movable?
+for r, c in rolls:
+    movable += is_movable(rolls,r,c)
 
 print('Part 1:', movable)
 
-def get_removable(ROLLS):
+def get_removable(rolls):
     removable = set()
-    for r,c in ROLLS:
-        adjs = 0
-        for dr, dc in dirs:
-            nr, nc = dr+r, dc+c
-            # Off-grid check
-            if 0 <= nr < R and 0 <= nc < C:
-                if (nr,nc) in ROLLS:
-                    adjs += 1
-        # Fewer than 4 adjacents means it can be removed
-        if adjs < 4:
+    # Iterate over the rolls
+    for r,c in rolls:
+        # Is this roll moveable?
+        if is_movable(rolls,r,c):
+            # Add it to the removable rolls set
             removable.add((r,c))
     return removable
 
