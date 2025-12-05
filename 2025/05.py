@@ -26,30 +26,35 @@ def get_overlapping_ranges(R1,R2):
     l1,r1 = R1
     l2,r2 = R2
 
+    # Always add the new range
+    newr.add(R1)
+
     if l1 < l2:
         if r1 < l2:
             # R1 is wholly left of R2
-            newr.add(R1)
             newr.add(R2)
         else: # r1 >= l2
-            # R1 covers R2 entirely
-            if r1 >= r2:
-                newr.add(R1)
-            else:
-                newr.add(R1)
+            # R1 inside R2
+            if r1 < r2:
+                # Add trimmed R2 RHS
                 newr.add((r1+1,r2))
-    else: # l1 >= l2
+    elif l1 == l2:
+        if r1 < r2:
+            # Add trimmed R2 RHS
+            newr.add((r1+1,r2))
+    else: # l1 > l2
         if l1 > r2:
             # R1 is wholly right of R2
-            newr.add(R1)
             newr.add(R2)
-        else: # l1 <= r2
-            # R1 covers R2 entirely
+        elif l1 == r2:
+            newr.add((l2,r2-1))
+        else: # l1 < r2
+            # R2 covers R1 entirely
             if r1 <= r2:
-                newr.add(R2)
+                newr.add((l2,l1-1))
+                newr.add((r1+1,r2))
             else:
-                newr.add((r2+1,r1))
-                newr.add(R1)
+                newr.add((l2,l1-1))
 
     return newr
 
@@ -60,15 +65,12 @@ for l,r in ranges:
     if not overlapped_ranges:
         overlapped_ranges.add((l,r))
     else:
-        #print('*',l,r)
         for L,R in overlapped_ranges:
-            #print('**',L,R)
             new_ranges.update(get_overlapping_ranges((l,r),(L,R)))
-            #print('***',new_ranges)
             overlapped_ranges = new_ranges
 
 total = 0
 for l,r in overlapped_ranges:
-    #print(l,r)
     total += r-l+1
+
 print('Part 2:', total)
