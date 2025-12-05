@@ -46,7 +46,7 @@ def get_overlapping_ranges(R1,R2):
         else: # l1 <= r2
             # R1 covers R2 entirely
             if r1 <= r2:
-                newr.add(R1)
+                newr.add(R2)
             else:
                 newr.add((r2+1,r1))
                 newr.add(R1)
