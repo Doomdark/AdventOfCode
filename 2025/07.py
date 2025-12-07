@@ -13,7 +13,7 @@ for r,line in enumerate(lines):
         # Only one beam exists initially
         elif char == 'S': beams[(r,c)] = 1
 
-# Count the splits
+# Count the splits for part 1
 splits = 0
 
 # Go down the list and split the beams at the splitter points
@@ -23,8 +23,9 @@ for i in range(len(lines)-1):
     # Test each beam
     for (r,c) in beams:
         # New beam moves downwards
-        nbeam = (r+1,c)
         nr = r+1
+        # New default beam location
+        nbeam = (nr,c)
         # Is this a splitter location?
         if nbeam in splitters:
             # Count the splits for part 1
@@ -32,10 +33,11 @@ for i in range(len(lines)-1):
             # Two new beams
             nbeaml = (nr,c-1)
             nbeamr = (nr,c+1)
-            # Sum the number of beams in each location
+            # Add to the new beams dictionary
+            # Sum the number of beams at each location for part 2
             nbeams[nbeaml] = nbeams.get(nbeaml,0) + beams[(r,c)]
             nbeams[nbeamr] = nbeams.get(nbeamr,0) + beams[(r,c)]
-        else: # Beam doesn't split
+        else: # Beam doesn't split so add it to the new beams dictionary
             nbeams[nbeam] = nbeams.get(nbeam,0) + beams[(r,c)]
     # Store new beams for the next iteration
     beams = nbeams
