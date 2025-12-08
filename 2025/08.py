@@ -1,15 +1,10 @@
+import numpy as np
+
 # Read the input
 lines = open("08a.in").read().splitlines()
 
 boxes = {}
 circuits = []
-
-import numpy as np
-
-p1 = np.array((1, 2, 3))
-p2 = np.array((1, 1, 1))
-
-d = np.linalg.norm(p1 - p2)
 
 def ed(a,b):
     'Euclidean distance'
