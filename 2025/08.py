@@ -29,6 +29,7 @@ for box1 in boxes:
 
 # Now make the circuits
 num = 0
+# use the shortest distances between boxes as the sort
 for box, nearest in sorted(boxes.items(), key=lambda x: x[1][1]):
     print(box, nearest)
     if num < 10:
