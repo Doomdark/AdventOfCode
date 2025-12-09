@@ -70,7 +70,6 @@ def fill(point):
 
 startx = min([x for x,y in edges])
 starty = min([y for x,y in tiles if x == startx])
-print(startx,starty)
 fill((startx+1, starty+1))
 
 print_grid()
@@ -80,6 +79,7 @@ biggest = 0
 for tile1 in tiles:
     x1,y1 = tile1
     for tile2 in tiles:
+        x2,y2 = tile2
         if tile2 == tile1: continue
 
         # Test if the area covered by these corners is all filled
