@@ -3,7 +3,7 @@ import multiprocessing as mp
 from collections import deque
 
 # Read the input
-lines = open("10.in").read().splitlines()
+lines = open("10a.in").read().splitlines()
 
 toggle = {'.':'#', '#':'.'}
 
@@ -13,7 +13,6 @@ class Machine:
         self.wiring = wiring
         self.joltages = joltages
         self.pushes = 0
-        self.dp = {}
 
     def part1(self):
         #q = []
@@ -26,6 +25,7 @@ class Machine:
             #print(pushes, len(q))
             if self.lights == state:
                 self.pushes = pushes
+                print(pushes)
                 return pushes
             # Try to press each combination of buttons
             for wiring in self.wiring:
@@ -41,12 +41,28 @@ class Machine:
                 q.append((pushes+1, nstate))
         print('Found none')
 
-    def part1a(self, pushes, state):
-        if state in self.dp:
-            return self.dp[state]
-
-
-
+    def part2(self):
+        q = deque()
+        q.append((0, [0 for x in self.joltages] ))
+        print(q)
+        while q:
+            pushes, state = q.popleft()
+            if self.joltages == state:
+                return pushes
+            # If any values in the state are bigger than the wanted joltages then continue
+            for wiring in self.wiring:
+                # New resulting state
+                nstate = []
+                # Change the state of each indicator lights
+                for i,joltage in enumerate(state):
+                    if i in wiring:
+                        nstate.append(joltage+1)
+                    else:
+                        nstate.append(joltage)
+                #heapq.heappush(q, (pushes+1, nstate))
+                q.append((pushes+1, nstate))
+                print(pushes+1,nstate)
+        print('Found none')
 
 machines = []
 
@@ -61,7 +77,7 @@ for line in lines:
     joltages = [int(x) for x in match.groups(1)[0].split(',')]
     machine = Machine(lights, wiring, joltages)
     machines.append(machine)
-    #print(lights, wiring, joltages)
+    print(lights, wiring, joltages)
 
 # jobs = []
 # for m in machines:
@@ -85,4 +101,5 @@ for line in lines:
 #     print(i, total)
 #     i += 1
 
-print('Part 1:', sum([m.part1() for m in machines]))
+#print('Part 1:', sum([m.part1() for m in machines]))
+print('Part 2:', sum([m.part2() for m in machines]))
