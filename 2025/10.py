@@ -1,9 +1,9 @@
-import re, heapq
-import multiprocessing as mp
+import re
 from collections import deque
+import scipy
 
 # Read the input
-lines = open("10a.in").read().splitlines()
+lines = open("10.in").read().splitlines()
 
 toggle = {'.':'#', '#':'.'}
 
@@ -12,24 +12,20 @@ class Machine:
         self.lights = lights
         self.wiring = wiring
         self.joltages = joltages
-        self.pushes = 0
 
     def part1(self):
-        #q = []
+        'Use a BFS to solve the indicator problem'
         q = deque()
-        #heapq.heappush(q, (0, ['.' for x in self.lights] ))
         q.append((0, ['.' for x in self.lights] ))
+        seen = set()
         while q:
-            #pushes, state = heapq.heappop(q)
             pushes, state = q.popleft()
-            #print(pushes, len(q))
+            # Are we there yet?
             if self.lights == state:
-                self.pushes = pushes
-                print(pushes)
                 return pushes
             # Try to press each combination of buttons
             for wiring in self.wiring:
-                # New resulting state
+                # New result state
                 nstate = []
                 # Change the state of each indicator lights
                 for i,light in enumerate(state):
@@ -37,35 +33,33 @@ class Machine:
                         nstate.append(toggle[state[i]])
                     else:
                         nstate.append(state[i])
-                #heapq.heappush(q, (pushes+1, nstate))
-                q.append((pushes+1, nstate))
+                # Check if we've seen this state before
+                if tuple(nstate) not in seen:
+                    seen.add(tuple(nstate))
+                    q.append((pushes+1, nstate))
         print('Found none')
 
     def part2(self):
-        q = deque()
-        q.append((0, [0 for x in self.joltages] ))
-        print(q)
-        while q:
-            pushes, state = q.popleft()
-            if self.joltages == state:
-                return pushes
-            # If any values in the state are bigger than the wanted joltages then continue
-            for wiring in self.wiring:
-                # New resulting state
-                nstate = []
-                # Change the state of each indicator lights
-                for i,joltage in enumerate(state):
-                    if i in wiring:
-                        nstate.append(joltage+1)
-                    else:
-                        nstate.append(joltage)
-                #heapq.heappush(q, (pushes+1, nstate))
-                q.append((pushes+1, nstate))
-                print(pushes+1,nstate)
-        print('Found none')
+        'Use SciPy to solve a matrix. 2D matrix of wiring x joltages.'
+        # Start at joltages of 0
+        A = [[0 for _ in range(len(self.wiring))] for j in range(len(self.joltages))]
+        # Solve the entries which have non-zero effects when you press the buttons
+        for j, button in enumerate(self.wiring):
+            for light in button:
+                A[light][j] = 1
+
+        c = [1 for _ in range(len(self.wiring))]
+        res = scipy.optimize.linprog(c, A_eq=A, b_eq=self.joltages, integrality=1)
+
+        if not res.success:
+            print("Couldn't find an optimal solution")
+            return -1
+
+        return sum(res.x)
 
 machines = []
 
+# Read in the source file and make each machine
 for line in lines:
     lights = re.findall(r'[.#]', line)
     wiring_list = re.findall(r'(\(\S+\))', line)
@@ -73,33 +67,10 @@ for line in lines:
     for w in wiring_list:
         nw = [int(x) for x in w[1:-1].split(',')]
         wiring.append(nw)
-    match = re.match('.*{(\S+)}', line)
+    match = re.match('.*{(.+)}', line)
     joltages = [int(x) for x in match.groups(1)[0].split(',')]
     machine = Machine(lights, wiring, joltages)
     machines.append(machine)
-    print(lights, wiring, joltages)
 
-# jobs = []
-# for m in machines:
-#     job = mp.Process(target=m.part1)
-#     jobs.append(job)
-#
-# for job in jobs:
-#     job.start()
-#
-# for job in jobs:
-#     job.join()
-#
-# print('Part 1:', sum([m.pushes for m in machines]) )
-# exit(0)
-
-#print(machines[0].pushes)
-# total = 0
-# i = 0
-# for m in machines:
-#     total += m.part1()
-#     print(i, total)
-#     i += 1
-
-#print('Part 1:', sum([m.part1() for m in machines]))
+print('Part 1:', sum([m.part1() for m in machines]))
 print('Part 2:', sum([m.part2() for m in machines]))
