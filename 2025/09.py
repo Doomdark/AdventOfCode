@@ -1,12 +1,15 @@
+from collections import defaultdict
+from itertools import combinations
+from bisect import bisect
+
 # Read the input
 lines = open("09.in").read().splitlines()
 
 tiles = []
 edges = set()
-filled = set()
+perimeter = set()
 
-minx, maxx, miny, maxy = 10**12,0,10**12,0
-
+# Make an edge between red tiles
 def make_edge(a,b):
     lx,ly = b
     x,y = a
@@ -17,100 +20,71 @@ def make_edge(a,b):
         for nx in range(min(x,lx), max(x,lx)+1):
             edges.add((nx,y))
 
+# Read in the input file
 for line in lines:
     x,y = map(int, line.split(','))
-    minx = min(minx,x)
-    maxx = max(maxx,x)
-    miny = min(miny,y)
-    maxy = max(maxy,y)
     if len(tiles) > 0:
         make_edge((x,y), tiles[-1])
     tiles.append((x,y))
 # Link the last and first tiles
 make_edge(tiles[0], tiles[-1])
 
+# Get the area of the provided tile pair
+def get_area(a,b):
+    x1,y1 = a
+    x2,y2 = b
+    x = max(x1,x2) - min(x1,x2) + 1
+    y = max(y1,y2) - min(y1,y2) + 1
+    return x * y
+
 biggest = 0
 
+# Do all times against each other to find the biggest
 for tile1 in tiles:
-    x1,y1 = tile1
     for tile2 in tiles:
-        x2,y2 = tile2
         if tile2 == tile1: continue
-        x = max(x1,x2) - min(x1,x2) + 1
-        y = max(y1,y2) - min(y1,y2) + 1
-        area = x * y
+        area = get_area(tile1,tile2)
         biggest = max(area, biggest)
 
 print('Part 1:', biggest)
 
-def print_grid():
-    for y in range(miny,maxy+1):
-        line = ''
-        for x in range(minx,maxx+1):
-            if (x,y) in filled:
-                line += '#'
-            else:
-                line += '.'
-        print(line)
+# Make a set with all the perimeter locations in it
+perimeter.update(set(tiles))
+perimeter.update(edges)
 
-filled.update(set(tiles))
-filled.update(edges)
+# Make a list of red tile pairs which decrease in area starting with the largest
+decreasing_sizes = sorted( ((get_area(*pair), pair) for pair in combinations(tiles, r=2)), reverse=True )
 
-def fill(point):
-    Q = [point]
-    filled.add(point)
-    while Q:
-        (x,y) = Q.pop()
-        filled.add((x,y))
-        for dy,dx in [(-1,0), (1,0), (0,-1), (0,1)]:
-            nx,ny = x+dx,y+dy
-            if (nx,ny) not in filled:
-                filled.add((nx,ny))
-                Q.append((nx,ny))
+y_lists = defaultdict(list)
+x_lists = defaultdict(list)
 
-startx = min([x for x,y in edges])
-starty = min([y for x,y in tiles if x == startx])
-fill((startx+1, starty+1))
+# Make lists of the x vs y and y vs x coordinates
+for x,y in perimeter:
+    y_lists[x].append(y)
+    x_lists[y].append(x)
 
-#print_grid()
-#exit(1)
+# Sort the lists by value
+for y_list in y_lists.values(): y_list.sort()
+for x_list in x_lists.values(): x_list.sort()
 
-biggest = 0
+# Determine if the provided red tile pair rectangle fits into the perimeter
+def contains_rectangle(a,b):
+    # Shrink the rectangle by 1 to avoid having to check for the edges intersecting
+    x_min = min(a[0],b[0]) + 1
+    x_max = max(a[0],b[0]) - 1
+    y_min = min(a[1],b[1]) + 1
+    y_max = max(a[1],b[1]) - 1
+    # Test all four edges of the rectangle against all the perimeter locations
+    if bisect(y_lists[x_min], y_min) != bisect(y_lists[x_min], y_max): return False
+    if bisect(y_lists[x_max], y_min) != bisect(y_lists[x_max], y_max): return False
+    if bisect(x_lists[y_min], x_min) != bisect(x_lists[y_min], x_max): return False
+    if bisect(x_lists[y_max], x_min) != bisect(x_lists[y_max], x_max): return False
+    # It fits!
+    return True
 
-for tile1 in tiles:
-    x1,y1 = tile1
-    for tile2 in tiles:
-        x2,y2 = tile2
-        if tile2 == tile1: continue
-
-        # Test if the rectangle perimeter covered by these corners is in the filled set
-        covered = True
-        min_x, max_x = min(x1,x2), max(x1,x2)
-        min_y, max_y = min(y1,y2), max(y1,y2)
-
-        for ny in [min_y,max_y]:
-            for nx in range(min_x, max_x+1):
-                if (nx,ny) not in filled:
-                    covered = False
-                    break
-            if not covered:
-                break
-
-        if not covered:
-            continue
-
-        for nx in [min_x,max_x]:
-            for ny in range(min_y, max_y+1):
-                if (nx,ny) not in filled:
-                    covered = False
-                    break
-            if not covered:
-                break
-
-        if covered:
-            x = max_x - min_x + 1
-            y = max_y - min_y + 1
-            area = x * y
-            biggest = max(area, biggest)
-
-print('Part 2:', biggest)
+# Test each tile pair against all the perimeter points from largest to smallest
+for area, pair in decreasing_sizes:
+    # The first one that fits is the largest
+    if contains_rectangle(*pair):
+        print('Part 2:', area)
+        break
